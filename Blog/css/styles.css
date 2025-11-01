@@ -1,0 +1,380 @@
+/*!
+ * Portfolio Nathan - Styles CSS
+ * Copyright (C) 2025 Nathan
+ * Licensed under the GNU General Public License v3.0
+ * You should have received a copy of the GNU GPL along with this stylesheet.
+ * If not, see <https://www.gnu.org/licenses/>.
+ */
+/* === Variables === */
+:root {
+  --font-base: "Source Sans 3", system-ui, "Segoe UI", "Helvetica Neue", roboto, arial, sans-serif;
+  --font-title: "Yanone Kaffeesatz", "Source Sans 3", system-ui, sans-serif;
+  --font-code: "JetBrains Mono", monospace;
+  --color-text: #f0f0f0;
+  --color-accent: #b57aff;
+  --color-bg: #0d0b14;
+  --glass-bg: rgba(255,255,255,0.05);
+  --glass-border: rgba(255,255,255,0.2);
+  --transition: 0.3s ease-in-out;
+}
+
+/* === Reset === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-base);
+  background: linear-gradient(135deg, #0d0b14, #1a1526);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.navigation {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: transparent;
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 5vw;
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.navigation:hover {
+  background: var(--color-bg);
+}
+
+.nav-logo {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nav-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  gap: 30px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  position: relative;
+  transition: 0.3s;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 10%;
+  width: 0%;
+  height: 3px;
+  background: var(--color-accent);
+  transition: width 0.28s ease;
+  border-radius: 2px;
+}
+
+.nav-links a:hover::after {
+  width: 80%;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-buttons a {
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  position: relative;
+  transition: 0.3s;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.nav-buttons a::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 10%;
+  width: 0%;
+  height: 3px;
+  background: var(--color-accent);
+  transition: width 0.28s ease;
+  border-radius: 2px;
+}
+
+.nav-buttons a:hover::after {
+  width: 80%;
+}
+
+.active::after {
+  background: #8be9fd !important;
+  width: 80% !important;
+}
+
+/* === Header === */
+header {
+  margin-top: 0.5rem; /* laisse la place pour le menu fixe */
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+header h1 {
+  font-family: var(--font-title);
+  font-size: 3rem;
+  color: var(--color-accent);
+}
+
+header p {
+  font-size: 1.2rem;
+  opacity: 0.85;
+  margin-top: 0.5rem;
+}
+
+/* === Container === */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  width: 100%;
+}
+
+/* === Glass Card === */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 1rem 0;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  transition: transform var(--transition), box-shadow var(--transition);
+  width: 90%;
+  max-width: 800px;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* === Sections === */
+.glass-card h2 {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+}
+
+.glass-card p {
+  font-size: 1rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* === Modal === */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.9);
+  z-index: 10000;
+  padding: 2rem;
+  overflow: auto; /* scroll si le modal dépasse l'écran */
+  transition: opacity var(--transition);
+}
+
+.modal-content {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh; /* limite la hauteur du modal à 90% de la fenêtre */
+  overflow-y: auto; /* scroll vertical si contenu trop grand */
+  animation: fadeInScale 0.35s ease forwards;
+}
+
+.modal-content h2 {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+}
+
+.modal-content p {
+  margin-bottom: 1rem;
+  color: #ccc;
+  font-size: 1rem;
+  line-height: 1.6;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.modal-images {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.modal-images img {
+  max-width: 48%;
+  border-radius: 16px;
+  transition: transform var(--transition);
+}
+
+.modal-images img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+/* === Date dans le modal (glass / accent) === */
+#modal-date,
+.date {
+  display: block;
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+/* Close button */
+.close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--color-accent);
+  transition: color var(--transition);
+}
+
+.close:hover {
+  color: #8be9fd;
+}
+
+/* === Ajustement de la date pour éviter les décalages === */
+.glass-card {
+  position: relative;
+  overflow: hidden; /* empêche tout débordement visuel */
+}
+
+.glass-card .date {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 0.9em;
+  color: #a0a0a0;
+  opacity: 0.8;
+  pointer-events: none; /* la date ne bloque pas le clic */
+  user-select: none;
+}
+
+/* === Modal sans scroll inutile === */
+#blog-modal {
+  overflow: hidden; /* pas de scroll global */
+}
+
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto; /* le contenu interne peut défiler si besoin */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(180,180,180,0.4) transparent;
+}
+
+/* === Footer simple glass === */
+footer {
+  background:  var(--color-bg);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+footer p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* === Responsive === */
+@media (max-width: 1024px) {
+  .nav-links { gap: 16px; }
+}
+
+@media (max-width: 768px) {
+  .navigation { flex-direction: column; gap: 8px; }
+  .nav-center { flex-direction: column; width: 100%; gap: 8px; }
+  .nav-links, .nav-buttons { flex-wrap: wrap; justify-content: center ga; }
+}
+
+@media (max-width: 480px) {
+  .nav-logo { width: 48px; height: 48px; }
+  .nav-links a, .nav-buttons a { padding: 4px 10px; font-size: 0.75rem; }  header h1 { font-size: 1.8rem; }
+}
+
+@media (max-width: 360px) {
+  .nav-logo { width: 42px; height: 42px; }
+  .nav-links a, .nav-buttons a { font-size: 0.75rem; padding: 4px 7px; }  header h1 { font-size: 1.6rem; }
+}
+
+@media (max-width: 320px) {
+  .nav-logo { width: 38px; height: 38px; }
+  .nav-links a, .nav-buttons a { font-size: 0.7rem; padding: 2px 4px; }
+}
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .glass-card {
+    width: 95%;
+  }
+}

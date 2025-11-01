@@ -1,0 +1,84 @@
+<!--!
+ * Portfolio Nathan - Page Projets
+ * Copyright (C) 2025 Nathan
+ * Licensed under the GNU General Public License v3.0
+ * You should have received a copy of the GNU GPL along with this HTML file.
+ * If not, see <https://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Projets de Nathan : découvre mes créations web, dashboards et sites animés.">
+  <meta name="author" content="Nathan The Coder">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="fr">
+  <meta property="og:type" content="website">
+  <title>Projets - Nathan The Coder</title>
+  <link rel="icon" href="flavicon/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="flavicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="flavicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="flavicon/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Yanone+Kaffeesatz:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <nav class="navigation">
+    <a href="/"><img src="img/nathan.jpg" alt="Logo" class="nav-logo"></a>
+  
+    <div class="nav-center">
+      <div class="nav-links">
+        <a href="/">Accueil</a>
+        <a href="" class="active">Projets</a>
+        <a href="/blog">Blog</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="nav-buttons">
+        <a href="/plan">Plan du site</a>
+        <a href="/changelog">Changelog</a>
+        <a href="/moi">À propos</a>
+        <a href="https://app-nathan-the-coder.netlify.app/" target="_blank" rel="noopener">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <header>
+      <h1>Projets</h1>
+      <p>Découvre mes créations web et mes projets animés.</p>
+  </header>
+
+<main>
+  <section class="container" id="projects-container">
+    <article class="glass-card">
+      <h2>Chargement des projets...</h2>
+      <p>Veuillez patienter...</p>
+    </article>
+  </section>
+</main>
+
+<div id="project-modal" class="modal">
+  <div class="modal-content glass-card">
+    <span class="close">&times;</span>
+    <h2 id="modal-title"></h2>
+    <p id="modal-description"></p>
+    <div class="modal-images">
+      <img id="modal-img1" src="" alt="Image 1">
+      <img id="modal-img2" src="" alt="Image 2">
+    </div>
+    <a id="modal-link" href="#" target="_blank">Voir le projet</a>
+  </div>
+</div>
+
+  <footer>
+    <p><strong>© 2025 - Nathan The Coder</strong></p>
+    <p><strong>Made with 🕑 and 💖 by Nathan J</strong>.</p>
+    <p id="last-update"><strong>Last update :</strong> loading...</p>
+  </footer>
+
+  <script type="module" src="js/script.js"></script>
+</body>
+</html>
