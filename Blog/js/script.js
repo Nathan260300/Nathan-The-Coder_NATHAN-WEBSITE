@@ -86,7 +86,7 @@ async function fetchBlog() {
     card.innerHTML = `
       <h2>${blog.title}</h2>
       <span class="date">${date}</span>
-      <p>${blog.short_description ? blog.short_description.slice(0, 100) + '…' : ''}</p>
+      <p>${blog.short_description}</p>
     `;
     card.addEventListener('click', () => openModal(blog));
     container.appendChild(card);
