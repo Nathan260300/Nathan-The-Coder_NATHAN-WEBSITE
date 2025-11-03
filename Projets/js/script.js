@@ -73,7 +73,7 @@ async function fetchProjects() {
     card.style.cursor = 'pointer'
     card.innerHTML = `
       <h2>${project.title}</h2>
-      <p>${project.short_description ? project.short_description.slice(0, 100) + '…' : ''}</p>
+      <p>${project.short_description}</p>
     `
     card.addEventListener('click', () => openModal(project))
     container.appendChild(card)
