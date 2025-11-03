@@ -65,12 +65,14 @@ async function fetchBlog() {
     return;
   }
 
-  // 🔥 Date du jour locale (sans l’heure)
-  const today = new Date().toISOString().split('T')[0]; // ex: "2025-11-03"
+  // 🕐 Date du jour en LOCAL, sans l’heure
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // on remet à minuit
 
-  // 🔥 On garde seulement les articles dont la date <= aujourd’hui
+  // 🧩 Filtrage : articles dont la date (locale) <= aujourd’hui
   const filtered = data.filter(blog => {
-    const articleDate = new Date(blog.created_at).toISOString().split('T')[0];
+    const articleDate = new Date(blog.created_at);
+    articleDate.setHours(0, 0, 0, 0);
     return articleDate <= today;
   });
 
