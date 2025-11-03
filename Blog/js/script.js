@@ -47,9 +47,16 @@ document.addEventListener("DOMContentLoaded", afficherDerniereMaj)
 
 // === Récupération et affichage des articles du blog ===
 async function fetchBlog() {
+  // On récupère la date actuelle de l'utilisateur (locale)
+  const now = new Date()
+
+  // On crée une version "YYYY-MM-DD" (juste la date)
+  const today = now.toISOString().split('T')[0] // ex: "2025-11-03"
+
   const { data, error } = await supabase
     .from('blog')
     .select('*')
+    .lte('created_at', today) // 👈 filtre sur la date uniquement
     .order('created_at', { ascending: false })
 
   const container = document.getElementById('blog-container')
