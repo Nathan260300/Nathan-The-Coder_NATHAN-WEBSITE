@@ -47,46 +47,48 @@ document.addEventListener("DOMContentLoaded", afficherDerniereMaj)
 
 // === Récupération et affichage des articles du blog ===
 async function fetchBlog() {
-  // On récupère la date actuelle de l'utilisateur (locale)
-  const now = new Date()
-
-  // On crée une version "YYYY-MM-DD" (juste la date)
-  const today = now.toISOString().split('T')[0] // ex: "2025-11-03"
-
   const { data, error } = await supabase
     .from('blog')
     .select('*')
-    .lte('created_at', today) // 👈 filtre sur la date uniquement
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false });
 
-  const container = document.getElementById('blog-container')
+  const container = document.getElementById('blog-container');
 
   if (error) {
-    console.error('Erreur Supabase:', error)
-    container.innerHTML = '<article class="glass-card"><h2>Erreur</h2><p>Une erreur est survenue lors du chargement des données.</p>'
-    return
+    console.error('Erreur Supabase:', error);
+    container.innerHTML = '<article class="glass-card"><h2>Erreur</h2><p>Une erreur est survenue lors du chargement des données.</p></article>';
+    return;
   }
 
   if (!data || data.length === 0) {
-    container.innerHTML = `<article class="glass-card"><h2>Aucun article...</h2><p>Aucun article a été trouvé.</p></article>`
-    return
+    container.innerHTML = `<article class="glass-card"><h2>Aucun article...</h2><p>Aucun article a été trouvé.</p></article>`;
+    return;
   }
 
-  container.innerHTML = ''
+  // 🔥 Date du jour locale (sans l’heure)
+  const today = new Date().toISOString().split('T')[0]; // ex: "2025-11-03"
 
-  data.forEach(blog => {
-    const card = document.createElement('article')
-    const date = new Date(blog.created_at).toLocaleDateString('fr-FR')
-    card.className = 'glass-card'
-    card.style.cursor = 'pointer'
+  // 🔥 On garde seulement les articles dont la date <= aujourd’hui
+  const filtered = data.filter(blog => {
+    const articleDate = new Date(blog.created_at).toISOString().split('T')[0];
+    return articleDate <= today;
+  });
+
+  container.innerHTML = '';
+
+  filtered.forEach(blog => {
+    const card = document.createElement('article');
+    const date = new Date(blog.created_at).toLocaleDateString('fr-FR');
+    card.className = 'glass-card';
+    card.style.cursor = 'pointer';
     card.innerHTML = `
       <h2>${blog.title}</h2>
       <span class="date">${date}</span>
       <p>${blog.short_description ? blog.short_description.slice(0, 100) + '…' : ''}</p>
-    `
-    card.addEventListener('click', () => openModal(blog))
-    container.appendChild(card)
-  })
+    `;
+    card.addEventListener('click', () => openModal(blog));
+    container.appendChild(card);
+  });
 }
 
 // === Modal ===
