@@ -116,9 +116,7 @@ function escapeHTML(str) {
 }
 
 function formatCodeBlocks(text) {
-  // Remplace les [code]...[/code] par des <pre><code>...</code></pre>
   return text.replace(/\[code\]([\s\S]*?)\[\/code\]/g, (match, p1) => {
-    // Échapper le contenu du code, pour pas que le HTML à l'intérieur s'affiche
     const safeCode = p1
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
