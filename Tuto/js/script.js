@@ -115,12 +115,19 @@ function escapeHTML(str) {
   return str.replace(/[&<>"']/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]));
 }
 
-// Fonction pour transformer [code]...[/code] en <pre><code>...</code></pre>
 function formatCodeBlocks(text) {
-  const safeText = escapeHTML(text); // échapper HTML
-  return safeText.replace(/\[code\]([\s\S]*?)\[\/code\]/g, '<code>$1</code>');
+  // Remplace les [code]...[/code] par des <pre><code>...</code></pre>
+  return text.replace(/\[code\]([\s\S]*?)\[\/code\]/g, (match, p1) => {
+    // Échapper le contenu du code, pour pas que le HTML à l'intérieur s'affiche
+    const safeCode = p1
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    return `<pre><code>${safeCode}</code></pre>`;
+  });
 }
-
 modalDescription.innerHTML = formatCodeBlocks(tutos.full_description);
 
   modal.style.display = 'flex'
