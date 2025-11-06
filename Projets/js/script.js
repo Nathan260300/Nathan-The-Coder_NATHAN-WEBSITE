@@ -1,12 +1,12 @@
 /*!
- * Portfolio Nathan - Page Tutos
+ * Portfolio Nathan - Page Projets
  * Copyright (C) 2025 Nathan
  * Licensed under the GNU General Public License v3.0
  */
 console.log("%c© 2025 - Nathan The Coder", "background: #282c34; color: #98c379; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
-console.log("%cTutos - Nathan The Coder", "background: #282c34; color: #61afef; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
-console.log("%cTuto de Nathan : découvre des tutoriels complets et détaillés de Nathan, incluant des extraits de code et des conseils pratiques.","background: #282c34; color: #61dafb; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
-console.log("%chttps://nathan-the-coder.netlify.app/tuto", "background: #282c34; color: #e06c75; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
+console.log("%cProjets - Nathan The Coder", "background: #282c34; color: #61afef; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
+console.log("%cProjets de Nathan : découvre mes créations web, dashboards et sites animés.","background: #282c34; color: #61dafb; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
+console.log("%chttps://nathan-the-coder.netlify.app/projets", "background: #282c34; color: #e06c75; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -45,92 +45,75 @@ async function afficherDerniereMaj() {
 
 document.addEventListener("DOMContentLoaded", afficherDerniereMaj)
 
-// === Récupération et affichage des articles du tutos ===
-async function fetchTuto() {
+// === Récupération et affichage des projets ===
+async function fetchProjects() {
   const { data, error } = await supabase
-    .from('tutos')
+    .from('projects')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
 
-  const container = document.getElementById('tutos-container');
+  const container = document.getElementById('projects-container')
 
   if (error) {
-    console.error('Erreur Supabase:', error);
-    container.innerHTML = '<article class="glass-card"><h2>Erreur</h2><p>Une erreur est survenue lors du chargement des données.</p></article>';
-    return;
+    console.error('Erreur Supabase:', error)
+    container.innerHTML = '<article class="glass-card"><h2>Erreur</h2><p>Une erreur est survenue lors du chargement des données.</p>'
+    return
   }
 
   if (!data || data.length === 0) {
-    container.innerHTML = `<article class="glass-card"><h2>Aucun tuto...</h2><p>Aucun tuto a été trouvé.</p></article>`;
-    return;
+    container.innerHTML = `<article class="glass-card"><h2>Aucun projet...</h2><p>Aucun projet a été trouvé.</p></article>`
+    return
   }
 
-  // 🕐 Date du jour en LOCAL, sans l’heure
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // on remet à minuit
+  container.innerHTML = ''
 
-  // 🧩 Filtrage : articles dont la date (locale) <= aujourd’hui
-  const filtered = data.filter(tutos => {
-    const articleDate = new Date(tutos.created_at);
-    articleDate.setHours(0, 0, 0, 0);
-    return articleDate <= today;
-  });
-
-  container.innerHTML = '';
-
-  filtered.forEach(tutos => {
-    const card = document.createElement('article');
-    const date = new Date(tutos.created_at).toLocaleDateString('fr-FR');
-    card.className = 'glass-card';
-    card.style.cursor = 'pointer';
+  data.forEach(project => {
+    const card = document.createElement('article')
+    card.className = 'glass-card'
+    card.style.cursor = 'pointer'
     card.innerHTML = `
-      <h2>${tutos.title}<span class="type">${tutos.type}</span>
-</h2>
-      <span class="date">${date}</span>
-      <p>${tutos.short_description}</p>
-    `;
-    card.addEventListener('click', () => openModal(tutos));
-    container.appendChild(card);
-  });
+      <h2>${project.title}</h2>
+      <p>${project.short_description}</p>
+    `
+    card.addEventListener('click', () => openModal(project))
+    container.appendChild(card)
+  })
 }
 
-// === Modal ===
-const modal = document.getElementById('tutos-modal')
+// Récupère le modal et ses éléments
+const modal = document.getElementById('project-modal')
 const modalTitle = document.getElementById('modal-title')
 const modalDescription = document.getElementById('modal-description')
-const modalDate = document.getElementById('modal-date')
-const modalType = document.getElementById('modal-type')
+const modalLink = document.getElementById('modal-link')
+const modalImg1 = document.getElementById('modal-img1')
+const modalImg2 = document.getElementById('modal-img2')
 const modalClose = modal.querySelector('.close')
 
+// Fermer le modal au clic sur la croix
 modalClose.onclick = () => modal.style.display = 'none'
+
+// Fermer le modal avec la touche Échap
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') modal.style.display = 'none'
+  if(e.key === 'Escape') modal.style.display = 'none'
 })
 
-async function openModal(tutos) {
-  modalTitle.innerHTML = `${tutos.title} <span id="modal-type">${tutos.type}</span>`;
-  modalDate.textContent = new Date(tutos.created_at).toLocaleDateString('fr-FR')
-// Fonction pour échapper les caractères HTML
-function escapeHTML(str) {
-  return str.replace(/[&<>"']/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[tag]));
-}
+async function openModal(project) {
+  modalTitle.textContent = project.title
+  modalDescription.innerHTML = project.full_description
+  if(project.link){
+    modalLink.href = project.link
+    modalLink.style.display = 'inline-block'
+  } else {
+    modalLink.style.display = 'none'
+  }
 
-function formatCodeBlocks(text) {
-  return text.replace(/\[code\]([\s\S]*?)\[\/code\]/g, (match, p1) => {
-    const safeCode = p1
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-    return `<pre><code>${safeCode}</code></pre>`;
-  });
-}
-modalDescription.innerHTML = formatCodeBlocks(tutos.full_description);
+  // Récupère les images depuis Supabase
+  modalImg1.src = project.image1_path 
+  modalImg2.src = project.image2_path
 
   modal.style.display = 'flex'
 }
 
 // === Lancement ===
-document.addEventListener('DOMContentLoaded', fetchTuto)
-setInterval(fetchTuto, 5000)
+document.addEventListener('DOMContentLoaded', fetchProjects)
+setInterval(fetchProjects, 5000)
