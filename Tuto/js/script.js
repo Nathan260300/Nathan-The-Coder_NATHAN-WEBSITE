@@ -125,7 +125,7 @@ function formatCodeBlocks(text) {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
-    return `<pre><code>${safeCode}</code></pre>`;
+    return `<code>${safeCode}</code>`;
   });
 }
 modalDescription.innerHTML = formatCodeBlocks(tutos.full_description);
