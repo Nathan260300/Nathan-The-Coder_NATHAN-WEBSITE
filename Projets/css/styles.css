@@ -254,21 +254,62 @@ header p {
 }
 
 .modal-images {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+  justify-items: center;
 }
 
 .modal-images img {
-  max-width: 48%;
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
   border-radius: 16px;
-  transition: transform var(--transition);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  cursor: zoom-in;
 }
 
+/* Effet au survol */
 .modal-images img:hover {
-  transform: scale(1.08);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Responsive --- */
+
+/* Petits écrans (smartphones) */
+@media (max-width: 600px) {
+  .modal-images {
+    grid-template-columns: 1fr; /* 1 image par ligne */
+    gap: 1rem;
+  }
+
+  .modal-images img {
+    aspect-ratio: 4 / 3; /* plus carré sur mobile */
+    max-height: 300px;
+  }
+}
+
+/* Écrans moyens (tablettes) */
+@media (min-width: 601px) and (max-width: 900px) {
+  .modal-images {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal-images img {
+    max-height: 350px;
+  }
+}
+
+/* Grands écrans (PC et +) */
+@media (min-width: 901px) {
+  .modal-images {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
 }
 
 /* === Date dans le modal (glass / accent) === */
