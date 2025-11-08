@@ -67,7 +67,7 @@ async function fetchRessources() {
 
   container.innerHTML = '';
 
-  filtered.forEach(ressources => {
+  data.forEach(ressources => {
     const card = document.createElement('article');
     card.className = 'glass-card';
     card.style.cursor = 'pointer';
