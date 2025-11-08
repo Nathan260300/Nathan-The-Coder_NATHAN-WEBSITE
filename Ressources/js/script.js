@@ -61,7 +61,7 @@ async function fetchRessources() {
   }
 
   if (!data || data.length === 0) {
-    container.innerHTML = `<article class="glass-card"><h2>Aucun article...</h2><p>Aucun article a été trouvé.</p></article>`;
+    container.innerHTML = `<article class="glass-card"><h2>Aucune ressource...</h2><p>Aucune ressource a été trouvé.</p></article>`;
     return;
   }
 
