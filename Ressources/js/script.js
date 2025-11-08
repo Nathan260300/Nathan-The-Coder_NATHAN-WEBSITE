@@ -65,22 +65,10 @@ async function fetchRessources() {
     return;
   }
 
-  // 🕐 Date du jour en LOCAL, sans l’heure
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // on remet à minuit
-
-  // 🧩 Filtrage : articles dont la date (locale) <= aujourd’hui
-  const filtered = data.filter(ressources => {
-    const articleDate = new Date(ressources.created_at);
-    articleDate.setHours(0, 0, 0, 0);
-    return articleDate <= today;
-  });
-
   container.innerHTML = '';
 
   filtered.forEach(ressources => {
     const card = document.createElement('article');
-    const date = new Date(ressources.created_at).toLocaleDateString('fr-FR');
     card.className = 'glass-card';
     card.style.cursor = 'pointer';
     card.innerHTML = `
