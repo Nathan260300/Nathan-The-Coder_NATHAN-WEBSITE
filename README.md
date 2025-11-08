@@ -12,6 +12,8 @@ Le dashboard est **privé** et **non inclus** dans ce dépôt pour des raisons d
 - **Projets :** mes sites et créations
 - **Changelog :** historique des mises à jour
 - **Contact :** page de contact
+- **Ressources :** des ressources indispensables pour le developpement web.
+- **Tutos :** mes tutoriels pour le developpement web.
 - **Dashboard :** réservé à l'auteur
 
 ## 💻 Technologie utilisée
