@@ -17,7 +17,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 // UID autorisé (le tien)
-const OWNER_UID = 'ton-uid-supabase';
+const OWNER_UID = '8ac94078-b231-4958-bc45-5ae1ed03863e';
 
 async function checkAccess() {
   const { data } = await supabase
@@ -76,3 +76,4 @@ async function afficherDerniereMaj() {
 
 
 document.addEventListener("DOMContentLoaded", afficherDerniereMaj)
+
