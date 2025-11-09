@@ -16,6 +16,35 @@ const supabaseUrl = 'https://hscsixqyszamzayemyra.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzY3NpeHF5c3phbXpheWVteXJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NTc5ODAsImV4cCI6MjA3NzQzMzk4MH0.1wsFzRo2kqT_98mmpFUntHYrrR3EPjc6HoXKnc_8Rr4'
 const supabase = createClient(supabaseUrl, supabaseKey)
 
+// UID autorisé (le tien)
+const OWNER_UID = 'ton-uid-supabase';
+
+async function checkAccess() {
+  const { data } = await supabase
+    .from('site_status')
+    .select('maintenance_mode')
+    .eq('id', 1)
+    .single();
+
+  if (!data) return;
+
+  if (data.maintenance_mode) {
+    const { data: userData } = await supabase.auth.getUser();
+
+    // Si pas connecté OU UID différent -> blocage total
+    if (!userData?.user || userData.user.id !== OWNER_UID) {
+      document.body.innerHTML = `
+        <main style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;text-align:center;color:#eee;background:#1e192b;">
+          <h1 style="font-size:2rem;">🚧 Site en maintenance</h1>
+          <p>Le site est temporairement inaccessible.<br>Merci de revenir plus tard.</p>
+        </main>
+      `;
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', checkAccess);
+
 async function afficherDerniereMaj() {
   const { data, error } = await supabase
     .from('site_info')
@@ -44,5 +73,6 @@ async function afficherDerniereMaj() {
     "background: #282c34; color: #c678dd; padding: .5em 1em; border-radius: 5px; font-weight: bold;"
   )
 }
+
 
 document.addEventListener("DOMContentLoaded", afficherDerniereMaj)
