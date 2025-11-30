@@ -1,20 +1,18 @@
-/*!
+/*! 
  * Portfolio Nathan - Page Contact
  * Copyright (C) 2025 Nathan
  * Licensed under the GNU General Public License v3.0
- * You should have received a copy of the GNU GPL along with this program.
- * If not, see <https://www.gnu.org/licenses/>.
  */
 console.log("%c© 2025 - Nathan The Coder", "background: #282c34; color: #98c379; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
 console.log("%cContact - Nathan The Coder", "background: #282c34; color: #61afef; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
 console.log("%cContacte Nathan pour poser tes questions, envoyer des suggestions ou simplement dire bonjour.","background: #282c34; color: #61dafb; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
 console.log("%chttps://nathan-the-coder.netlify.app/contact", "background: #282c34; color: #e06c75; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
 
+// === Dernière mise à jour ===
 async function afficherDerniereMaj() {
   try {
     const res = await fetch("/.netlify/functions/get-last-update");
     const data = await res.json();
-
     const el = document.getElementById("last-update");
 
     if (!data.dernier_maj) {
@@ -39,102 +37,53 @@ async function afficherDerniereMaj() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", afficherDerniereMaj);
+// === Formulaire contact ===
+document.addEventListener("DOMContentLoaded", () => {
+  afficherDerniereMaj();
 
-// Formulaire contact
-const form = document.getElementById('contactForm');
+  const form = document.getElementById('contactForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const message = form.message.value.trim();
 
-  const name = form.name.value.trim();
-  const email = form.email.value.trim();
-  const message = form.message.value.trim();
+    if (!name || !message) {
+      alert("Le nom et le message sont obligatoires !");
+      return;
+    }
 
-  if (!name || !message) {
-    alert("Le nom et le message sont obligatoires !");
-    return;
-  }
+    try {
+      const res = await fetch("/.netlify/functions/send-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
 
-  try {
-    const res = await fetch("/.netlify/functions/send-contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, message }),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      alert("Message envoyé avec succès !");
-      form.reset();
-    } else {
-      console.error(data.error);
+      if (res.ok && data.success) {
+        alert("Message envoyé avec succès !");
+        form.reset();
+      } else {
+        console.error(data.error);
+        alert("Erreur lors de l'envoi du message.");
+      }
+    } catch (err) {
+      console.error(err);
       alert("Erreur lors de l'envoi du message.");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Erreur lors de l'envoi du message.");
-  }
-});
+  });
 
-// Menu toggle
-const toggle = document.querySelector('.menu-toggle');
-const menu = document.querySelector('.floating-menu');
+  // === Menu toggle ===
+  const toggle = document.querySelector('.menu-toggle');
+  const menu = document.querySelector('.floating-menu');
 
-toggle.addEventListener('click', () => {
-  menu.classList.toggle('open');
-  if (menu.classList.contains('open')) {
-    setTimeout(() => menu.classList.remove('open'), 5000);
-  }
-});
-
-// Formulaire contact
-const form = document.getElementById('contactForm');
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const name = form.name.value.trim();
-  const email = form.email.value.trim();
-  const message = form.message.value.trim();
-
-  if (!name || !message) {
-    alert("Le nom et le message sont obligatoires !");
-    return;
-  }
-
-  try {
-    const res = await fetch("/.netlify/functions/send-contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, message }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      alert("Message envoyé avec succès !");
-      form.reset();
-    } else {
-      console.error(data.error);
-      alert("Erreur lors de l'envoi du message.");
+  toggle.addEventListener('click', () => {
+    menu.classList.toggle('open');
+    if (menu.classList.contains('open')) {
+      setTimeout(() => menu.classList.remove('open'), 5000);
     }
-  } catch (err) {
-    console.error(err);
-    alert("Erreur lors de l'envoi du message.");
-  }
+  });
 });
-
-// Menu toggle
-const toggle = document.querySelector('.menu-toggle');
-const menu = document.querySelector('.floating-menu');
-
-toggle.addEventListener('click', () => {
-  menu.classList.toggle('open');
-  if (menu.classList.contains('open')) {
-    setTimeout(() => menu.classList.remove('open'), 5000);
-  }
-});
-
-
