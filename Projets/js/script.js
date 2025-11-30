@@ -69,6 +69,34 @@ async function fetchProjects() {
   }
 }
 
+const modal = document.getElementById('project-modal')
+const modalTitle = document.getElementById('modal-title')
+const modalDescription = document.getElementById('modal-description')
+const modalLink = document.getElementById('modal-link')
+const modalImg1 = document.getElementById('modal-img1')
+const modalImg2 = document.getElementById('modal-img2')
+const modalClose = modal.querySelector('.close')
+
+modalClose.onclick = () => modal.style.display = 'none'
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') modal.style.display = 'none'
+})
+
+function openModal(project) {
+  modalTitle.textContent = project.title
+  modalDescription.innerHTML = project.full_description
+  if(project.link){
+    modalLink.href = project.link
+    modalLink.style.display = 'inline-block'
+  } else {
+    modalLink.style.display = 'none'
+  }
+  modalImg1.src = project.image1_path 
+  modalImg2.src = project.image2_path
+  modal.style.display = 'flex'
+}
+
 // === Lancement ===
 document.addEventListener('DOMContentLoaded', fetchProjects)
 setInterval(fetchProjects, 5000)
