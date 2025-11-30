@@ -100,3 +100,14 @@ function openModal(project) {
 // === Lancement ===
 document.addEventListener('DOMContentLoaded', fetchProjects)
 setInterval(fetchProjects, 5000)
+
+// Menu toggle
+const toggle = document.querySelector('.menu-toggle');
+const menu = document.querySelector('.floating-menu');
+
+toggle.addEventListener('click', () => {
+  menu.classList.toggle('open');
+  if (menu.classList.contains('open')) {
+    setTimeout(() => menu.classList.remove('open'), 5000);
+  }
+});
