@@ -10,75 +10,61 @@ console.log("%cChangelog - Nathan The Coder", "background: #282c34; color: #61af
 console.log("%cChangelog de Nathan : découvre toutes les mises à jour et nouveautés de mon portfolio et projets web.","background: #282c34; color: #61dafb; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
 console.log("%chttps://nathan-the-coder.netlify.app/changelog", "background: #282c34; color: #e06c75; padding: .5em 1em; border-radius: 5px; font-weight: bold;");
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const supabaseUrl = 'https://hscsixqyszamzayemyra.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzY3NpeHF5c3phbXpheWVteXJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NTc5ODAsImV4cCI6MjA3NzQzMzk4MH0.1wsFzRo2kqT_98mmpFUntHYrrR3EPjc6HoXKnc_8Rr4'
-const supabase = createClient(supabaseUrl, supabaseKey)
-
+// === Dernière mise à jour ===
 async function afficherDerniereMaj() {
-  const { data, error } = await supabase
-    .from('site_info')
-    .select('dernier_maj')
-    .eq('id', 1)
-    .single()
+  try {
+    const res = await fetch("/.netlify/functions/get-last-update");
+    const data = await res.json();
+    const el = document.getElementById("last-update");
 
-  const el = document.getElementById('last-update')
+    if (!data.dernier_maj) {
+      if (el) el.innerHTML = "<strong>Last update :</strong> erreur";
+      return;
+    }
 
-  if (error) {
-    console.error('Erreur Supabase:', error)
-    if (el) el.innerHTML = "<strong>Last update :</strong> erreur"
-    return
+    const date = new Date(data.dernier_maj);
+    const jour = String(date.getDate()).padStart(2, "0");
+    const mois = String(date.getMonth() + 1).padStart(2, "0");
+    const annee = date.getFullYear();
+    const dateFormatee = `${jour}/${mois}/${annee}`;
+
+    if (el) el.innerHTML = `<strong>Last update :</strong> ${dateFormatee}`;
+
+    console.log(
+      `%cMade with 🕑 and 💖 by Nathan J. – Last update : ${dateFormatee}`,
+      "background: #282c34; color: #c678dd; padding: .5em 1em; border-radius: 5px; font-weight: bold;"
+    );
+  } catch (err) {
+    console.error("Erreur fetch :", err);
   }
-
-  const date = new Date(data.dernier_maj)
-  const jour = String(date.getDate()).padStart(2, '0')
-  const mois = String(date.getMonth() + 1).padStart(2, '0')
-  const annee = date.getFullYear()
-  const dateFormatee = `${jour}/${mois}/${annee}`
-
-  if (el) el.innerHTML = `<strong>Last update :</strong> ${dateFormatee}`
-
-  console.log(
-    `%cMade with 🕑 and 💖 by Nathan J. – Last update : ${dateFormatee}`,
-    "background: #282c34; color: #c678dd; padding: .5em 1em; border-radius: 5px; font-weight: bold;"
-  )
 }
 
 document.addEventListener("DOMContentLoaded", afficherDerniereMaj)
 
 async function fetchChangelog() {
-  const container = document.getElementById('changelog-section')
+  try {
+    const res = await fetch("/.netlify/functions/get-changelog"); 
+    if (!res.ok) throw new Error("Erreur fetch changelog");
 
-  const { data, error } = await supabase
-    .from('changelog')
-    .select('id, date, description')
-    .order('date', { ascending: false })
+    const data = await res.json();
+    const container = document.getElementById('changelog-section');
+    container.innerHTML = '';
 
-  if (error) {
-    console.error('Erreur chargement changelog:', error)
-    container.innerHTML = `<article class="glass-card"><h2>Erreur<h2><p>Une erreur s'est produite lors du chargement des données...</p></article>`
-    return
+    if (!data || data.length === 0) {
+      container.innerHTML = `<article class="glass-card"><h2>Aucun changelog...</h2></article>`;
+      return;
+    }
+
+    data.forEach(entry => {
+      const dateStr = entry.date ? new Date(entry.date).toLocaleDateString('fr-FR') : 'À venir';
+      const article = document.createElement('article');
+      article.className = 'glass-card';
+      article.innerHTML = `<h2>${dateStr}</h2><p>${entry.description.replace(/\n/g, '<br>')}</p>`;
+      container.appendChild(article);
+    });
+  } catch (err) {
+    console.error("Erreur fetch changelog:", err);
   }
-
-  if (!data || data.length === 0) {
-    container.innerHTML = `<article class="glass-card"><h2>Aucun changelog...</h2><p>Aucun changelog a été trouvé.</p></article>`
-    return
-  }
-
-  container.innerHTML = ''
-
-  data.forEach(entry => {
-    const dateStr = entry.date ? new Date(entry.date).toLocaleDateString('fr-FR') : 'À venir'
-
-    const article = document.createElement('article')
-    article.className = 'glass-card'
-    article.innerHTML = `
-      <h2>${dateStr}</h2>
-      <p>${entry.description.replace(/\n/g, '<br>')}</p>
-    `
-    container.appendChild(article)
-  })
 }
 
 fetchChangelog()
