@@ -15,7 +15,7 @@ export const handler = async () => {
     const { data, error } = await supabase
       .from("changelog") 
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("date", { ascending: false });
 
     if (error) {
       return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
