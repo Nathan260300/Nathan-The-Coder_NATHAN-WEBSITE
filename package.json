@@ -1,0 +1,12 @@
+{
+  "name": "portfolio-nathan",
+  "version": "1.0.0",
+  "description": "Portfolio Nathan - Netlify Functions",
+  "main": "index.js",
+  "scripts": {
+    "start": "netlify dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.32.0"
+  }
+}
