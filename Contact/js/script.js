@@ -1,6 +1,5 @@
 /*!
  * Portfolio Nathan - Page Contact
-
  * Copyright (C) 2025 Nathan
  * Licensed under the GNU General Public License v3.0
  * You should have received a copy of the GNU GPL along with this program.
@@ -137,4 +136,5 @@ toggle.addEventListener('click', () => {
     setTimeout(() => menu.classList.remove('open'), 5000);
   }
 });
+
 
