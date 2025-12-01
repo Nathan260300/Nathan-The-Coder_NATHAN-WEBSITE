@@ -301,8 +301,8 @@ header p {
 
 .glass-card h2 {
   font-family: var(--font-title);
-  font-size: 2rem;
-  color: var(--color-accent);
+  font-size: 1.8rem;
+  color: var(--color-primary);
   margin-bottom: 1rem;
 
   display: flex;
