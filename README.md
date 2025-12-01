@@ -2,7 +2,7 @@
 
 Portfolio personnel de Nathan, présentant mes projets web, mon blog, mes créations et un dashboard privé.
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/e8d83083-0ffa-4a8a-ac44-85eca4f1ace9/deploy-status)](https://app.netlify.com/projects/nathan-v1/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/f95f8906-e69e-4564-9187-6fa171ba93d3/deploy-status)](https://app.netlify.com/projects/nathan-the-coder/deploys)
 
 ## 📄 Description
 
