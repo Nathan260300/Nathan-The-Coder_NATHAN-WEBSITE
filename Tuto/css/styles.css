@@ -299,11 +299,15 @@ header p {
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-.glass-card h2 {
+.modal-content h2 {
   font-family: var(--font-title);
-  font-size: 1.8rem;
-  color: var(--color-primary);
+  font-size: 2rem;
+  color: var(--color-accent);
   margin-bottom: 1rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .glass-card p {
@@ -572,5 +576,4 @@ footer p {
   .glass-card {
     width: 95%;
   }
-
 }
