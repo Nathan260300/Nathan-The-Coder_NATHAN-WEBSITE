@@ -292,6 +292,27 @@ header p {
   transition: transform var(--transition), box-shadow var(--transition);
   width: 90%;
   max-width: 800px;
+  text-decoration: none;
+}
+
+.card-link {
+  display: block;
+  width: 100%;
+  max-width: 800px; /* même max que tes articles */
+  margin: 1.5rem auto;
+  padding: 2rem;
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px) saturate(180%);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card-link:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
 .glass-card:hover {
@@ -337,19 +358,27 @@ footer p {
 
 /* === Terminal full-page === */
 .code-terminal {
-  background: rgba(0,0,0,0.95);
-  border-radius: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
   font-family: var(--font-code);
   color: var(--color-text);
-  width: 95%;
-  max-width: 1000px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
   margin-bottom: 2rem;
   flex: 1;
   min-height: 300px;
+  transition: transform var(--transition), box-shadow var(--transition);
+  width: 100%;
+  max-width: 800px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.code-terminal:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
 .terminal-code {
@@ -358,8 +387,8 @@ footer p {
   font-size: 0.95rem;
   line-height: 1.5;
   white-space: pre-wrap;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .terminal-code .tag { color: var(--color-accent); }
@@ -373,7 +402,7 @@ footer p {
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  background: rgba(255,255,255,0.1);
+  background: rgba(30, 60, 90, 0.55);
   font-size: 0.9rem;
   color: var(--color-text);
   gap: 1rem;
@@ -433,12 +462,68 @@ footer p {
     font-size: 2rem;
   }
 
-  .code-terminal {
-    height: 60vh;
-    width: 95%;
-  }
-
   .glass-card {
     width: 95%;
+  }
+}
+
+/* === TERMINAL RESPONSIVE === */
+@media (max-width: 380px) {
+  .code-terminal {
+    max-width: 95%;
+    min-height: 220px;
+    border-radius: 12px;
+  }
+
+  .terminal-bar {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .terminal-bar .btn {
+    width: 10px;
+    height: 10px;
+  }
+
+  .terminal-title {
+    font-size: 0.75rem;
+  }
+
+  .terminal-code {
+    padding: 0.6rem;
+    font-size: 0.7rem;
+    white-space: pre-wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .code-terminal {
+    width: 95%;
+    min-height: 250px;
+  }
+
+  .terminal-code {
+    font-size: 0.8rem;
+    padding: 0.7rem;
+  }
+
+  .terminal-title {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .code-terminal {
+    width: 95%;
+    min-height: 300px;
+  }
+
+  .terminal-code {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .code-terminal {
+    max-width: 800px;
   }
 }
