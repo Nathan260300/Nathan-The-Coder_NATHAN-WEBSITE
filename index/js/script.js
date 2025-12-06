@@ -42,7 +42,7 @@ async function afficherDerniereMaj() {
 document.addEventListener("DOMContentLoaded", afficherDerniereMaj);
 
   function pingBot() {
-    fetch("https://ton-bot.onrender.com/ping") // remplace par l'URL de ton bot Render
+    fetch("https://https://nathan-the-coder-bot-discord.onrender.com/ping") // remplace par l'URL de ton bot Render
       .then(() => console.log("Bot pinged!"))
       .catch(err => console.error("Erreur ping bot :", err));
   }
@@ -51,4 +51,5 @@ document.addEventListener("DOMContentLoaded", afficherDerniereMaj);
   setInterval(pingBot, 5 * 60 * 1000);
 
   // Ping immédiat au chargement de la page
+
   pingBot();
