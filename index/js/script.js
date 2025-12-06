@@ -41,16 +41,14 @@ async function afficherDerniereMaj() {
 
 document.addEventListener("DOMContentLoaded", afficherDerniereMaj);
 
-  function pingBot() {
-    fetch("https://nathan-the-coder-bot-discord.onrender.com/ping") // remplace par l'URL de ton bot Render
-      .then(() => console.log("Bot pinged!"))
-      .catch(err => console.error("Erreur ping bot :", err));
-  }
+function pingBot() {
+  fetch("https://nathan-the-coder-bot-discord.onrender.com/ping") 
+    .then(() => console.log(
+      `%cBot Discord Ping !`,
+      "background: #282c34; color: #e06c75; padding: .5em 1em; border-radius: 5px; font-weight: bold;"
+    ))
+    .catch(err => console.error("Erreur ping bot :", err));
+}
 
-  // Ping toutes les 5 minutes
-  setInterval(pingBot, 5 * 60 * 1000);
-
-  // Ping immédiat au chargement de la page
-
-  pingBot();
-
+setInterval(pingBot, 5 * 60 * 1000);
+pingBot();
