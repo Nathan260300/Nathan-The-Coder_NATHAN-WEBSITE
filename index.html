@@ -60,53 +60,167 @@
     </div>
   </nav>
 
-  <header>
-      <h1>Hello ! Je suis Nathan</h1>
-      <p>Collégien passionné de développement web.</p>
+  <header class="hero">
+    <div class="hero-content">
+      <p class="hero-kicker">Développeur web & créateur d'expériences</p>
+      <h1>Hello ! Je suis Nathan, et je crée des sites modernes, rapides et élégants.</h1>
+      <p class="hero-lead">
+        Collégien passionné par le développement web, je conçois des interfaces claires, des animations
+        fluides et des sites pensés pour être utiles, beaux et performants.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="/projets">Voir mes projets</a>
+        <a class="btn ghost" href="/contact">Me contacter</a>
+      </div>
+      <div class="hero-badges">
+        <span>HTML • CSS • JavaScript</span>
+        <span>UI/UX & Animations</span>
+        <span>Sites responsives</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img src="index/img/nathan.jpg" alt="Portrait de Nathan" class="hero-avatar">
+      <h2>Créateur de solutions web</h2>
+      <p>
+        J'aime transformer des idées en expériences interactives. Chaque projet est pensé pour mettre
+        en valeur un message clair et une navigation intuitive.
+      </p>
+      <div class="hero-stats">
+        <div>
+          <span class="stat-number">15+</span>
+          <span class="stat-label">projets</span>
+        </div>
+        <div>
+          <span class="stat-number">3</span>
+          <span class="stat-label">années de passion</span>
+        </div>
+        <div>
+          <span class="stat-number">100%</span>
+          <span class="stat-label">curiosité</span>
+        </div>
+      </div>
+      <a class="btn small" href="/moi">Découvrir mon parcours</a>
+    </div>
   </header>
 
 <main>
-  <section class="container">
-    <a href="" class="glass-card card-link">
-      <h2>Accueil</h2>
-      <p>Portfolio de Nathan, collégien et développeur passionné. Découvrez mes projets web, mon blog et mes compétences !</p>
-    </a>
+  <section class="section intro-section">
+    <div class="section-header">
+      <p class="section-kicker">Bienvenue</p>
+      <h2>Un portfolio clair, vivant et orienté résultats</h2>
+      <p>
+        Je mets l'accent sur la simplicité, la performance et l'émotion visuelle. Chaque page est
+        optimisée pour être fluide, agréable à lire et facile à parcourir.
+      </p>
+    </div>
+    <div class="info-grid">
+      <article class="glass-card info-card">
+        <h3>Design moderne</h3>
+        <p>Des interfaces élégantes avec une hiérarchie claire et des animations subtiles.</p>
+      </article>
+      <article class="glass-card info-card">
+        <h3>Expérience utilisateur</h3>
+        <p>Des parcours simples pour guider les visiteurs vers l'information clé.</p>
+      </article>
+      <article class="glass-card info-card">
+        <h3>Performance</h3>
+        <p>Des pages légères et rapides, pensées pour le mobile et le desktop.</p>
+      </article>
+    </div>
+  </section>
 
-    <a href="/projets" class="glass-card card-link">
-      <h2>Projets</h2>
-      <p>Découvre mes créations web, dashboards et sites animés.</p>
-    </a>
+  <section class="section skills-section">
+    <div class="section-header">
+      <p class="section-kicker">Compétences</p>
+      <h2>Mon stack & mes forces</h2>
+    </div>
+    <div class="skills-grid">
+      <article class="glass-card skill-card">
+        <h3>Front-end</h3>
+        <p>HTML, CSS, JavaScript, animations fluides et layout responsive.</p>
+      </article>
+      <article class="glass-card skill-card">
+        <h3>UI / UX</h3>
+        <p>Wireframes clairs, design systems simples, mises en page équilibrées.</p>
+      </article>
+      <article class="glass-card skill-card">
+        <h3>Projets & tests</h3>
+        <p>Organisation de projets, documentation et ajustements continus.</p>
+      </article>
+      <article class="glass-card skill-card">
+        <h3>Supabase</h3>
+        <p>Auth, données et dashboards pour des projets dynamiques.</p>
+      </article>
+    </div>
+  </section>
 
-    <a href="/blog" class="glass-card card-link">
-      <h2>Blog</h2>
-      <p>Découvre mes articles, astuces web et réflexions sur le développement et la création numérique.</p>
-    </a>
+  <section class="section projects-section">
+    <div class="section-header">
+      <p class="section-kicker">Sélection</p>
+      <h2>Projets phares</h2>
+      <p>Un aperçu des univers que je construis : dashboards, blogs et sites animés.</p>
+    </div>
+    <div class="projects-grid">
+      <article class="glass-card project-card">
+        <h3>Dashboards créatifs</h3>
+        <p>Des interfaces claires pour piloter des projets ou des données en temps réel.</p>
+        <a class="text-link" href="/projets">Voir les dashboards →</a>
+      </article>
+      <article class="glass-card project-card">
+        <h3>Sites animés</h3>
+        <p>Des pages immersives avec des micro-interactions et des effets de verre.</p>
+        <a class="text-link" href="/projets">Voir les sites →</a>
+      </article>
+      <article class="glass-card project-card">
+        <h3>Contenus & tutoriels</h3>
+        <p>Des guides clairs pour apprendre et partager mes découvertes.</p>
+        <a class="text-link" href="/tuto">Voir les tutos →</a>
+      </article>
+    </div>
+  </section>
 
-    <a href="/tuto" class="glass-card card-link">
-      <h2>Tutos</h2>
-      <p>Découvre des tutoriels complets et détaillés de moi-même, incluant des extraits de code et des conseils pratiques.</p>
-    </a>
+  <section class="section navigation-section">
+    <div class="section-header">
+      <p class="section-kicker">Explorer</p>
+      <h2>Découvre tout le site</h2>
+    </div>
+    <div class="cards-grid">
+      <a href="" class="glass-card card-link">
+        <h3>Accueil</h3>
+        <p>Portfolio de Nathan, collégien et développeur passionné.</p>
+      </a>
+      <a href="/projets" class="glass-card card-link">
+        <h3>Projets</h3>
+        <p>Découvre mes créations web, dashboards et sites animés.</p>
+      </a>
+      <a href="/blog" class="glass-card card-link">
+        <h3>Blog</h3>
+        <p>Articles, astuces web et réflexions sur le développement.</p>
+      </a>
+      <a href="/tuto" class="glass-card card-link">
+        <h3>Tutos</h3>
+        <p>Tutoriels détaillés avec extraits de code et conseils pratiques.</p>
+      </a>
+      <a href="/ressources" class="glass-card card-link">
+        <h3>Ressources</h3>
+        <p>Outils, sites et APIs recommandés pour développer plus vite.</p>
+      </a>
+      <a href="/contact" class="glass-card card-link">
+        <h3>Contact</h3>
+        <p>Une question ou une idée ? Viens discuter avec moi.</p>
+      </a>
+      <a href="/changelog" class="glass-card card-link">
+        <h3>Changelog</h3>
+        <p>Toutes les mises à jour et nouveautés du portfolio.</p>
+      </a>
+      <a href="/moi" class="glass-card card-link">
+        <h3>À propos</h3>
+        <p>Mon parcours, mes valeurs et ma vision du web.</p>
+      </a>
+    </div>
+  </section>
 
-    <a href="/ressources" class="glass-card card-link">
-      <h2>Ressources</h2>
-      <p>Ressources utiles pour le développement web : outils, sites, extensions et APIs recommandés par moi-même.</p>
-    </a>
-
-    <a href="/contact" class="glass-card card-link">
-      <h2>Contact</h2>
-      <p>Contacte moi pour poser tes questions, envoyer des suggestions ou simplement dire bonjour.</p>
-    </a>
-
-    <a href="/changelog" class="glass-card card-link">
-      <h2>Changelog</h2>
-      <p>Découvre toutes les mises à jour et nouveautés de mon portfolio et projets web.</p>
-    </a>
-
-    <a href="/moi" class="glass-card card-link">
-      <h2>À propos</h2>
-      <p>À propos de moi — développeur web passionné.</p>
-    </a>
-
+  <section class="section terminal-section">
     <article class="glass-card code-terminal">
       <div class="terminal-bar">
         <div class="buttons-container">
