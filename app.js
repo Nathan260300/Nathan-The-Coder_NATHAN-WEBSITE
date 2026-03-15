@@ -200,7 +200,7 @@ async function renderHome() {
         <div class="stat-label">Tutoriels</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">2+</div>
+        <div class="stat-value">1+</div>
         <div class="stat-label">Années d'XP</div>
       </div>
     </div>
