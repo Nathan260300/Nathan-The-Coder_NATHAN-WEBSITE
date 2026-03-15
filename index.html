@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio de Nathan — Développeur web & bot Discord passionné.">
+  <meta name="author" content="Nathan The Coder">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Nathan The Coder">
+  <meta property="og:description" content="Développeur web & bot Discord.">
+  <meta property="og:image" content="assets/nathan.jpg">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nathan-the-coder.netlify.app">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nathan The Coder">
+  <meta name="twitter:description" content="Développeur web & bot Discord.">
+  <meta name="twitter:image" content="assets/nathan.jpg">
+  <link rel="icon" href="assets/favicon/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="assets/favicon/site.webmanifest">
+  <title>Nathan The Coder</title>
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="bg-grid"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <nav id="nav">
+    <a href="?p=home" class="nav-brand" data-page="home">
+      <img src="assets/nathan.jpg" alt="Nathan The Coder" class="nav-logo-img">
+      <span>Nathan<span class="accent">.</span></span>
+    </a>
+    <button class="nav-burger" id="navBurger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-menu" id="navMenu">
+      <div class="nav-links">
+        <a href="?p=home"         data-page="home">Accueil</a>
+        <a href="?p=projets"      data-page="projets">Projets</a>
+        <a href="?p=blog"         data-page="blog">Blog</a>
+        <a href="?p=tuto"         data-page="tuto">Tutos</a>
+        <a href="?p=competences"  data-page="competences">Compétences</a>
+        <a href="?p=ressources"   data-page="ressources">Ressources</a>
+        <a href="?p=changelog"    data-page="changelog">Changelog</a>
+        <a href="?p=moi"          data-page="moi">À propos</a>
+      </div>
+      <div class="nav-actions">
+        <a href="?p=contact" class="btn-nav-cta" data-page="contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="app">
+    <div class="page-loader" id="pageLoader">
+      <div class="loader-ring"></div>
+    </div>
+  </main>
+
+  <footer id="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-top">
+          <img src="assets/nathan.jpg" alt="Nathan The Coder" class="footer-logo-img">
+          <span class="footer-name">Nathan<span class="accent">.</span></span>
+        </div>
+        <p>Développeur web & bot Discord</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/nathan260300" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
+        <a href="https://discord.gg/Mrstx6fPhp" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>
+        <a href="https://youtube.com/@nathan26060" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="footer-copy">
+        <span>© 2026 Nathan The Coder — GNU GPL v3</span>
+        <span id="footer-update" class="footer-update"></span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose" aria-label="Fermer">&times;</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script src="app.js"></script>
+</body>
+</html>
