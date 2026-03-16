@@ -363,7 +363,7 @@ async function renderContact() {
             <a class="contact-link-item" href="https://github.com/nathan260300" target="_blank" rel="noopener">
               <i class="fab fa-github"></i> GitHub — nathan260300
             </a>
-            <a class="contact-link-item" href="https://discord.gg/Mrstx6fPhp" target="_blank" rel="noopener">
+            <a class="contact-link-item" href="https://discord.gg/hvK9dhSKQF" target="_blank" rel="noopener">
               <i class="fab fa-discord"></i> Serveur Discord
             </a>
             <a class="contact-link-item" href="https://youtube.com/@nathan26060" target="_blank" rel="noopener">
