@@ -38,7 +38,7 @@
   padding: 0;
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
   font-family: var(--font-body);
@@ -63,14 +63,13 @@ input, textarea, select {
 
 .grain {
   position: fixed;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
   opacity: 0.022;
   pointer-events: none;
   z-index: 0;
-  animation: grain-move 8s steps(2) infinite;
 }
 
 @keyframes grain-move {
@@ -1432,6 +1431,12 @@ input, textarea, select {
 @media (max-width: 768px) {
   :root { --nav-h: 60px; }
 
+  #nav {
+    padding: 0 16px;
+  }
+
+  .nav-burger { display: flex; }
+
   .nav-menu {
     display: none;
     position: fixed;
@@ -1439,14 +1444,14 @@ input, textarea, select {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(8, 11, 16, 0.98);
+    background: rgba(8, 11, 16, 0.99);
     backdrop-filter: blur(20px);
     flex-direction: column;
-    padding: 20px 16px;
-    border-top: 1px solid var(--border);
-    gap: 8px;
+    padding: 16px;
+    gap: 4px;
     overflow-y: auto;
-    z-index: 99;
+    z-index: 98;
+    border-top: 1px solid var(--border);
   }
   .nav-menu.open { display: flex; }
 
@@ -1458,159 +1463,155 @@ input, textarea, select {
   }
   .nav-links a {
     width: 100%;
-    padding: 13px 16px;
+    padding: 14px 16px;
     font-size: 1rem;
     border-radius: var(--radius-sm);
+    display: block;
   }
+  .nav-links a.active::after { display: none; }
+
   .nav-actions {
     width: 100%;
+    margin-top: 8px;
     padding-top: 12px;
     border-top: 1px solid var(--border);
   }
   .btn-nav-cta {
+    display: block;
     width: 100%;
     text-align: center;
-    justify-content: center;
-    padding: 13px;
+    padding: 14px;
     font-size: 1rem;
   }
-  .nav-burger { display: flex; }
 
   .page-hero {
-    padding: clamp(36px, 8vw, 60px) 18px clamp(24px, 4vw, 40px);
+    padding: 36px 16px 24px;
   }
 
   .page-content {
-    padding: 0 18px clamp(40px, 8vw, 70px);
+    padding: 0 16px 48px;
   }
 
   .home-hero {
-    padding: 36px 18px 32px;
-    gap: 32px;
+    padding: 32px 16px 28px;
+    gap: 28px;
   }
 
   .home-greeting {
     font-size: 0.72rem;
-    padding: 5px 12px;
-    gap: 8px;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    padding: 5px 10px;
+    gap: 7px;
     max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
   }
 
   .home-title {
-    font-size: clamp(2rem, 8vw, 2.8rem);
+    font-size: clamp(1.9rem, 7.5vw, 2.6rem);
   }
 
   .home-desc {
     font-size: 0.95rem;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     max-width: 100%;
   }
 
   .home-cta {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    width: 100%;
   }
   .btn-primary, .btn-secondary {
     justify-content: center;
     width: 100%;
+    box-sizing: border-box;
   }
 
+  .terminal {
+    overflow: hidden;
+  }
   .terminal-body {
-    font-size: 0.75rem;
-    padding: 14px;
-    min-height: 200px;
+    font-size: 0.72rem;
+    padding: 12px;
+    min-height: 180px;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .terminal-title {
+    font-size: 0.68rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 160px;
   }
 
   .home-stack {
-    padding: 0 18px;
-    margin-top: 36px;
+    padding: 0 16px;
+    margin-top: 32px;
   }
 
   .stats-row {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 0 18px;
-    margin-top: 32px;
+    gap: 10px;
+    padding: 0 16px;
+    margin-top: 28px;
   }
-
-  .stat-card {
-    padding: 18px 14px;
-  }
-
-  .stat-value {
-    font-size: 1.8rem;
-  }
+  .stat-card { padding: 16px 12px; }
+  .stat-value { font-size: 1.7rem; }
 
   .home-recent {
-    padding: 0 18px clamp(40px, 8vw, 70px);
-    margin-top: 36px;
+    padding: 0 16px 48px;
+    margin-top: 32px;
   }
 
   .cards-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 12px;
   }
+  .card { padding: 18px 16px; }
 
-  .card {
-    padding: 20px;
-  }
-
-  .about-card {
-    padding: 22px 18px;
-  }
-
-  .contact-form-card {
-    padding: 24px 18px;
-  }
-
-  .contact-info-card {
-    padding: 18px;
-  }
+  .about-card { padding: 20px 16px; }
+  .contact-form-card { padding: 20px 16px; }
+  .contact-info-card { padding: 16px; }
 
   .skill-cards-row {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
-
-  .skill-card {
-    padding: 14px 14px;
-  }
+  .skill-card { padding: 14px; }
 
   .modal {
-    padding: 12px;
+    padding: 0;
     align-items: flex-end;
   }
-
   .modal-box {
-    padding: 24px 18px;
+    padding: 20px 16px 32px;
     border-radius: var(--radius) var(--radius) 0 0;
-    max-height: 90vh;
+    max-height: 88vh;
+    width: 100%;
+    max-width: 100%;
   }
-
+  .modal-close {
+    top: 12px;
+    right: 12px;
+  }
   #modalContent h2 {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    padding-right: 28px;
   }
+  #modalContent p {
+    font-size: 0.875rem;
+  }
+  .modal-images { grid-template-columns: 1fr; }
 
-  .modal-images {
-    grid-template-columns: 1fr;
-  }
-
-  .changelog-timeline {
-    padding-left: 20px;
-  }
-
-  .changelog-card {
-    padding: 18px;
-  }
+  .changelog-timeline { padding-left: 20px; }
+  .changelog-card { padding: 16px; }
 
   .footer-inner {
     flex-direction: column;
     align-items: flex-start;
-    gap: 20px;
+    gap: 18px;
   }
   .footer-copy { text-align: left; }
 }
@@ -1619,77 +1620,36 @@ input, textarea, select {
   :root { --nav-h: 56px; }
 
   .nav-logo-img { width: 28px; height: 28px; }
+  .nav-brand { font-size: 1.1rem; gap: 8px; }
 
-  .nav-brand {
-    font-size: 1.1rem;
-    gap: 8px;
-  }
-
-  .home-title {
-    font-size: clamp(1.8rem, 9vw, 2.4rem);
-  }
-
-  .home-greeting {
-    font-size: 0.68rem;
-  }
-
-  .page-title {
-    font-size: clamp(1.8rem, 7vw, 2.8rem);
-  }
+  .home-title { font-size: clamp(1.7rem, 8vw, 2.2rem); }
+  .page-title { font-size: clamp(1.7rem, 7vw, 2.4rem); }
 
   .stats-row {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 0 16px;
+    padding: 0 14px;
+    gap: 8px;
   }
+  .stat-value { font-size: 1.5rem; }
 
-  .stat-value { font-size: 1.6rem; }
+  .skill-cards-row { grid-template-columns: 1fr; }
 
-  .skill-cards-row {
-    grid-template-columns: 1fr;
-  }
-
-  .badge {
-    font-size: 0.78rem;
-    padding: 5px 10px;
-  }
+  .badge { font-size: 0.76rem; padding: 5px 10px; }
 
   .section-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 6px;
   }
 
-  .modal-box {
-    padding: 20px 14px;
-  }
-
-  #modalContent h2 {
-    font-size: 1.15rem;
-    padding-right: 24px;
-  }
+  .modal-box { padding: 18px 14px 28px; }
+  #modalContent h2 { font-size: 1.1rem; }
 }
 
 @media (max-width: 360px) {
-  .home-title {
-    font-size: 1.7rem;
-  }
-
-  .stats-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 0 14px;
-  }
-
-  .card { padding: 16px; }
-  .about-card { padding: 16px; }
-
-  .terminal-body {
-    font-size: 0.68rem;
-    padding: 10px;
-  }
-
-  .terminal-title {
-    font-size: 0.65rem;
-  }
+  .home-title { font-size: 1.6rem; }
+  .card { padding: 14px 12px; }
+  .about-card { padding: 14px 12px; }
+  .terminal-body { font-size: 0.64rem; padding: 10px; }
+  .stats-row { padding: 0 12px; }
 }
