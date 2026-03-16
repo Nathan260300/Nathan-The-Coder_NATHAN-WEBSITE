@@ -730,10 +730,10 @@ function attachContactForm() {
 
 async function fetchFooterUpdate() {
   try {
-    const { data } = await db.from('settings').select('value').eq('key', 'last_update').single();
-    if (data?.value) {
+    const { data } = await db.from('changelog').select('created_at').order('created_at', { ascending: false }).limit(1).single();
+    if (data?.created_at) {
       const el = document.getElementById('footer-update');
-      if (el) el.textContent = `Dernière MAJ : ${formatDate(data.value)}`;
+      if (el) el.textContent = `Dernière MAJ : ${formatDate(data.created_at)}`;
     }
   } catch(_) {}
 }
