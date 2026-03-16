@@ -750,9 +750,19 @@ document.addEventListener('click', e => {
   navigate(p);
 });
 
-document.getElementById('navBurger').addEventListener('click', () => {
+document.getElementById('navBurger').addEventListener('click', e => {
+  e.stopPropagation();
   document.getElementById('navMenu').classList.toggle('open');
   document.getElementById('navBurger').classList.toggle('open');
+});
+
+document.addEventListener('click', e => {
+  const nav = document.getElementById('nav');
+  const menu = document.getElementById('navMenu');
+  if (menu.classList.contains('open') && !nav.contains(e.target)) {
+    menu.classList.remove('open');
+    document.getElementById('navBurger').classList.remove('open');
+  }
 });
 
 window.addEventListener('popstate', () => navigate(getPage()));
