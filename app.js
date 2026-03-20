@@ -636,15 +636,36 @@ function openModal(html) {
 
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
+  const params = new URLSearchParams(window.location.search);
+  const hasModal = params.has('projet') || params.has('blog') || params.has('tuto');
+  if (hasModal) {
+    params.delete('projet');
+    params.delete('blog');
+    params.delete('tuto');
+    const newUrl = '?' + params.toString();
+    window.history.pushState({}, '', newUrl);
+  }
 }
 
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('modalBackdrop').addEventListener('click', closeModal);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-async function openProjectModal(id) {
+async function openProjectModal(id, pushState = true) {
   const { data, error } = await db.from('projects').select('*').eq('id', id).single();
-  if (error || !data) return;
+  if (error || !data) {
+    openModal(`
+      <div class="modal-tag">⚡ Projet</div>
+      <h2 style="color:var(--text-muted)">Projet introuvable</h2>
+      <p>Ce projet n'existe pas ou a été supprimé.</p>
+    `);
+    return;
+  }
+  if (pushState) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('projet', id);
+    window.history.pushState({}, '', '?' + params.toString());
+  }
   const imgs = [data.image1_path, data.image2_path].filter(Boolean);
   openModal(`
     <div class="modal-tag">⚡ Projet</div>
@@ -655,9 +676,24 @@ async function openProjectModal(id) {
   `);
 }
 
-async function openBlogModal(id, table) {
+async function openBlogModal(id, table, pushState = true) {
   const { data, error } = await db.from(table).select('*').eq('id', id).single();
-  if (error || !data) return;
+  if (error || !data) {
+    const label = table === 'blog' ? '📝 Article' : '🎓 Tutoriel';
+    const labelText = table === 'blog' ? 'article' : 'tutoriel';
+    openModal(`
+      <div class="modal-tag">${label}</div>
+      <h2 style="color:var(--text-muted)">${labelText.charAt(0).toUpperCase() + labelText.slice(1)} introuvable</h2>
+      <p>Cet ${labelText} n'existe pas ou a été supprimé.</p>
+    `);
+    return;
+  }
+  if (pushState) {
+    const params = new URLSearchParams(window.location.search);
+    const paramKey = table === 'blog' ? 'blog' : 'tuto';
+    params.set(paramKey, id);
+    window.history.pushState({}, '', '?' + params.toString());
+  }
   const label = table === 'blog' ? '📝 Article' : '🎓 Tutoriel';
   const imgs = [data.image1_path, data.image2_path].filter(Boolean);
   openModal(`
@@ -765,6 +801,19 @@ document.addEventListener('click', e => {
   }
 });
 
-window.addEventListener('popstate', () => navigate(getPage()));
+window.addEventListener('popstate', () => {
+  navigate(getPage());
+  checkModalParams();
+});
 
-navigate(getPage());
+async function checkModalParams() {
+  const params = new URLSearchParams(window.location.search);
+  const projetId = params.get('projet');
+  const blogId   = params.get('blog');
+  const tutoId   = params.get('tuto');
+  if (projetId)  await openProjectModal(projetId, false);
+  else if (blogId)   await openBlogModal(blogId, 'blog', false);
+  else if (tutoId)   await openBlogModal(tutoId, 'tutos', false);
+}
+
+navigate(getPage()).then(() => checkModalParams());
