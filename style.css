@@ -202,7 +202,7 @@ input, textarea, select {
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 12px;
 }
 
 .nav-links {
@@ -1679,4 +1679,72 @@ input, textarea, select {
   .about-card { padding: 14px 12px; }
   .terminal-body { font-size: 0.64rem; padding: 10px; }
   .stats-row { padding: 0 12px; }
+}
+.collab-persons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.modal-collabs {
+  margin-bottom: 16px;
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.collab-person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collab-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(0,212,255,0.3);
+  flex-shrink: 0;
+}
+
+.collab-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,212,255,0.1);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.collab-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.collab-person-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.collab-link {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  transition: color var(--transition);
+}
+.collab-link:hover { color: var(--accent); }
+
+.collab-discord {
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  color: #5865f2;
 }

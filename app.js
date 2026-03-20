@@ -16,7 +16,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-const PAGES = ['home', 'projets', 'blog', 'tuto', 'ressources', 'competences', 'contact', 'changelog', 'moi'];
+const PAGES = ['home', 'projets', 'blog', 'tuto', 'ressources', 'competences', 'contact', 'changelog', 'moi', 'collaborations'];
 
 function getPage() {
   const params = new URLSearchParams(window.location.search);
@@ -52,6 +52,7 @@ async function navigate(page) {
       case 'contact':      wrapper.innerHTML = await renderContact();      break;
       case 'changelog':    wrapper.innerHTML = await renderChangelog();    break;
       case 'moi':          wrapper.innerHTML = await renderMoi();          break;
+      case 'collaborations': wrapper.innerHTML = await renderCollaborations(); break;
       default:          wrapper.innerHTML = render404();
     }
   } catch (err) {
@@ -67,7 +68,7 @@ async function navigate(page) {
   const titles = {
     home: 'Accueil', projets: 'Projets', blog: 'Blog', tuto: 'Tutos',
     ressources: 'Ressources', competences: 'Compétences', contact: 'Contact',
-    changelog: 'Changelog', moi: 'À propos'
+    changelog: 'Changelog', moi: 'À propos', collaborations: 'Collaborations'
   };
   document.title = `${titles[page] || page} — Nathan The Coder`;
 
@@ -517,6 +518,46 @@ async function renderMoi() {
     </div>`;
 }
 
+async function renderCollaborations() {
+  const [content, result] = await Promise.allSettled([
+    fetchPageContent('collaborations'),
+    fetchTable('collaborations', { order: 'created_at' })
+  ]);
+  const pc   = content.value;
+  const data = result.status === 'fulfilled' ? result.value : [];
+  const err  = result.status === 'rejected'  ? result.reason?.message : null;
+
+  const cards = err
+    ? buildErrorState(err)
+    : data.length
+      ? data.map(c => {
+          const collabs = (c.collaborateurs || []);
+          const avatars = collabs.map(col => `
+            <div class="collab-person">
+              ${col.avatar ? `<img src="${col.avatar}" alt="${col.nom}" class="collab-avatar" onerror="this.style.display='none'">` : `<div class="collab-avatar collab-avatar-fallback">${col.nom?.charAt(0)?.toUpperCase() || '?'}</div>`}
+              <span class="collab-name">${col.nom || ''}</span>
+            </div>`).join('');
+          return `
+            <article class="card" data-id="${c.id}" style="cursor:pointer">
+              <div class="card-tag">🤝 Collab</div>
+              <h3>${c.title || ''}</h3>
+              <p>${c.short_description || ''}</p>
+              ${collabs.length ? `<div class="collab-persons">${avatars}</div>` : ''}
+              <div class="card-meta">
+                <span>${formatDate(c.created_at)}</span>
+                <span class="card-arrow">→</span>
+              </div>
+            </article>`;
+        }).join('')
+      : buildEmptyState('Aucune collaboration pour le moment.');
+
+  return `
+    ${pageHero(pc, { label: 'Collaborations', title: 'Mes collabs', subtitle: 'Projets réalisés en collaboration avec d\'autres développeurs et créateurs.' })}
+    <div class="page-content">
+      <div class="cards-grid" data-modal-type="collaboration">${cards}</div>
+    </div>`;
+}
+
 function render404() {
   return `
     <div class="page-404">
@@ -538,11 +579,12 @@ function renderError(msg) {
 }
 
 function afterRender(page) {
-  if (page === 'home')       afterHome();
-  if (page === 'projets')    attachCardModal('project');
-  if (page === 'blog')       attachCardModal('blog');
-  if (page === 'tuto')       attachCardModal('tuto');
-  if (page === 'contact')    attachContactForm();
+  if (page === 'home')           afterHome();
+  if (page === 'projets')        attachCardModal('project');
+  if (page === 'blog')           attachCardModal('blog');
+  if (page === 'tuto')           attachCardModal('tuto');
+  if (page === 'collaborations') attachCardModal('collaboration');
+  if (page === 'contact')        attachContactForm();
 
   fetchFooterUpdate();
 }
@@ -637,11 +679,12 @@ function openModal(html) {
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
   const params = new URLSearchParams(window.location.search);
-  const hasModal = params.has('projet') || params.has('blog') || params.has('tuto');
+  const hasModal = params.has('projet') || params.has('blog') || params.has('tuto') || params.has('collab');
   if (hasModal) {
     params.delete('projet');
     params.delete('blog');
     params.delete('tuto');
+    params.delete('collab');
     const newUrl = '?' + params.toString();
     window.history.pushState({}, '', newUrl);
   }
@@ -710,10 +753,51 @@ function attachCardModal(type) {
   const table = tableMap[type];
   document.querySelectorAll(`.cards-grid[data-modal-type="${type}"] .card[data-id]`).forEach(card => {
     card.addEventListener('click', () => {
-      if (type === 'project') openProjectModal(card.dataset.id);
+      if (type === 'project')     openProjectModal(card.dataset.id);
+      else if (type === 'collaboration') openCollabModal(card.dataset.id);
       else openBlogModal(card.dataset.id, table);
     });
   });
+}
+
+async function openCollabModal(id, pushState = true) {
+  const { data, error } = await db.from('collaborations').select('*').eq('id', id).single();
+  if (error || !data) {
+    openModal(`
+      <div class="modal-tag">🤝 Collab</div>
+      <h2 style="color:var(--text-muted)">Collaboration introuvable</h2>
+      <p>Cette collaboration n'existe pas ou a été supprimée.</p>
+    `);
+    return;
+  }
+  if (pushState) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('collab', id);
+    window.history.pushState({}, '', '?' + params.toString());
+  }
+  const imgs = [data.image1_path, data.image2_path].filter(Boolean);
+  const collabs = (data.collaborateurs || []);
+  const avatarsHtml = collabs.length ? `
+    <div class="collab-persons modal-collabs">
+      ${collabs.map(col => `
+        <div class="collab-person">
+          ${col.avatar ? `<img src="${col.avatar}" alt="${col.nom}" class="collab-avatar" onerror="this.style.display='none'">` : `<div class="collab-avatar collab-avatar-fallback">${col.nom?.charAt(0)?.toUpperCase() || '?'}</div>`}
+          <div class="collab-person-info">
+            <span class="collab-name">${col.nom || ''}</span>
+            ${col.github ? `<a href="${col.github}" target="_blank" rel="noopener" class="collab-link"><i class="fab fa-github"></i></a>` : ''}
+            ${col.discord ? `<span class="collab-discord"><i class="fab fa-discord"></i> ${col.discord}</span>` : ''}
+          </div>
+        </div>`).join('')}
+    </div>` : '';
+
+  openModal(`
+    <div class="modal-tag">🤝 Collab</div>
+    <h2>${data.title}</h2>
+    ${avatarsHtml}
+    ${imgs.length ? `<div class="modal-images">${imgs.map(s => `<img src="${s}" alt="">`).join('')}</div>` : ''}
+    <div style="margin-top:8px">${nl2br(data.full_description || data.short_description || '')}</div>
+    ${data.link ? `<a class="modal-link" href="${data.link}" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Voir le projet</a>` : ''}
+  `);
 }
 
 function attachContactForm() {
@@ -811,9 +895,11 @@ async function checkModalParams() {
   const projetId = params.get('projet');
   const blogId   = params.get('blog');
   const tutoId   = params.get('tuto');
-  if (projetId)  await openProjectModal(projetId, false);
+  const collabId = params.get('collab');
+  if (projetId)      await openProjectModal(projetId, false);
   else if (blogId)   await openBlogModal(blogId, 'blog', false);
   else if (tutoId)   await openBlogModal(tutoId, 'tutos', false);
+  else if (collabId) await openCollabModal(collabId, false);
 }
 
 navigate(getPage()).then(() => checkModalParams());
