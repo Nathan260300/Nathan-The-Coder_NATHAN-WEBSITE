@@ -17,14 +17,18 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 let _currentUser = null;
+let _sessionReady = false;
 
 db.auth.onAuthStateChange((event, session) => {
+  const wasLoggedIn = !!_currentUser;
   _currentUser = session?.user ?? null;
 
   if (event === 'SIGNED_IN' && window.opener) {
     window.opener.postMessage({ type: 'DISCORD_LOGIN_SUCCESS' }, window.location.origin);
     window.close();
   }
+
+  if (!_sessionReady) { _sessionReady = true; return; }
 
   if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
     document.querySelectorAll('[id^="comment-form-area-"]').forEach(area => {
@@ -34,7 +38,7 @@ db.auth.onAuthStateChange((event, session) => {
       loadComments(id, ct);
       loadReactions(id, ct);
     });
-    if (getPage() === 'contact') navigate('contact');
+    if (getPage() === 'contact' && wasLoggedIn !== !!_currentUser) navigate('contact');
   }
 });
 
