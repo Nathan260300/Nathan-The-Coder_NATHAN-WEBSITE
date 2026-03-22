@@ -10,11 +10,79 @@ const SUPABASE_ANON_KEY = 'sb_publishable_mn40HNV14AbJmXA3veAqMQ_VdkOEPFd';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-    detectSessionInUrl: false
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
   }
 });
+
+let _currentUser = null;
+
+db.auth.onAuthStateChange((event, session) => {
+  _currentUser = session?.user ?? null;
+
+  if (event === 'SIGNED_IN' && window.opener) {
+    window.opener.postMessage({ type: 'DISCORD_LOGIN_SUCCESS' }, window.location.origin);
+    window.close();
+  }
+
+  if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+    document.querySelectorAll('[id^="comment-form-area-"]').forEach(area => {
+      const id = area.id.replace('comment-form-area-', '');
+      const ct = area.closest('[data-content-type]')?.dataset.contentType || 'blog';
+      renderCommentForm(id, ct);
+      loadComments(id, ct);
+      loadReactions(id, ct);
+    });
+    if (getPage() === 'contact') navigate('contact');
+  }
+});
+
+db.auth.getSession().then(({ data: { session } }) => {
+  _currentUser = session?.user ?? null;
+});
+
+window.addEventListener('message', async (e) => {
+  if (e.origin !== window.location.origin) return;
+  if (e.data?.type !== 'DISCORD_LOGIN_SUCCESS') return;
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) return;
+  _currentUser = session.user;
+  document.querySelectorAll('[id^="comment-form-area-"]').forEach(area => {
+    const id = area.id.replace('comment-form-area-', '');
+    const ct = area.closest('[data-content-type]')?.dataset.contentType || 'blog';
+    renderCommentForm(id, ct);
+    loadReactions(id, ct);
+  });
+});
+
+function getDiscordUser() {
+  if (!_currentUser) return null;
+  return {
+    id:         _currentUser.id,
+    username:   _currentUser.user_metadata?.full_name || _currentUser.user_metadata?.name || 'Inconnu',
+    avatar_url: _currentUser.user_metadata?.avatar_url || null,
+    discord_id: _currentUser.user_metadata?.provider_id || null,
+  };
+}
+
+async function loginWithDiscord() {
+  const { data, error } = await db.auth.signInWithOAuth({
+    provider: 'discord',
+    options: {
+      scopes: 'identify',
+      skipBrowserRedirect: true,
+      redirectTo: window.location.origin + window.location.pathname + window.location.search,
+    }
+  });
+  if (error) { console.error('OAuth error:', error.message); return; }
+  window.open(data.url, 'discord-oauth', 'width=500,height=700,left=400,top=100');
+}
+
+async function logout() {
+  await db.auth.signOut();
+  _currentUser = null;
+}
 
 const PAGES = ['home', 'projets', 'blog', 'tuto', 'ressources', 'competences', 'contact', 'changelog', 'moi', 'collaborations'];
 
@@ -24,36 +92,61 @@ function getPage() {
   return PAGES.includes(p) ? p : '404';
 }
 
+let _progressTimer = null;
+
+function startProgressBar() {
+  const bar = document.getElementById('nav-progress');
+  if (!bar) return;
+  clearTimeout(_progressTimer);
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  bar.style.opacity = '1';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      bar.style.transition = 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      bar.style.width = '70%';
+    });
+  });
+}
+
+function finishProgressBar() {
+  const bar = document.getElementById('nav-progress');
+  if (!bar) return;
+  bar.style.transition = 'width 0.2s ease';
+  bar.style.width = '100%';
+  _progressTimer = setTimeout(() => {
+    bar.style.transition = 'opacity 0.3s ease';
+    bar.style.opacity = '0';
+  }, 220);
+}
+
 async function navigate(page) {
-  const app     = document.getElementById('app');
-  const loader  = document.getElementById('pageLoader');
+  const app = document.getElementById('app');
 
   document.querySelectorAll('[data-page]').forEach(el => {
     el.classList.toggle('active', el.dataset.page === page);
   });
 
+  startProgressBar();
+
   app.innerHTML = '';
-  const loaderEl = document.createElement('div');
-  loaderEl.className = 'page-loader';
-  loaderEl.innerHTML = '<div class="loader-ring"></div>';
-  app.appendChild(loaderEl);
 
   const wrapper = document.createElement('div');
   wrapper.className = 'page';
 
   try {
     switch (page) {
-      case 'home':      wrapper.innerHTML = await renderHome();      break;
-      case 'projets':   wrapper.innerHTML = await renderProjets();   break;
-      case 'blog':      wrapper.innerHTML = await renderBlog();      break;
-      case 'tuto':      wrapper.innerHTML = await renderTuto();      break;
-      case 'ressources':   wrapper.innerHTML = await renderRessources();   break;
-      case 'competences':  wrapper.innerHTML = await renderCompetences();  break;
-      case 'contact':      wrapper.innerHTML = await renderContact();      break;
-      case 'changelog':    wrapper.innerHTML = await renderChangelog();    break;
-      case 'moi':          wrapper.innerHTML = await renderMoi();          break;
-      case 'collaborations': wrapper.innerHTML = await renderCollaborations(); break;
-      default:          wrapper.innerHTML = render404();
+      case 'home':           wrapper.innerHTML = await renderHome();            break;
+      case 'projets':        wrapper.innerHTML = await renderProjets();         break;
+      case 'blog':           wrapper.innerHTML = await renderBlog();            break;
+      case 'tuto':           wrapper.innerHTML = await renderTuto();            break;
+      case 'ressources':     wrapper.innerHTML = await renderRessources();      break;
+      case 'competences':    wrapper.innerHTML = await renderCompetences();     break;
+      case 'contact':        wrapper.innerHTML = await renderContact();         break;
+      case 'changelog':      wrapper.innerHTML = await renderChangelog();       break;
+      case 'moi':            wrapper.innerHTML = await renderMoi();             break;
+      case 'collaborations': wrapper.innerHTML = await renderCollaborations();  break;
+      default:               wrapper.innerHTML = render404();
     }
   } catch (err) {
     console.error('Page render error:', err);
@@ -63,6 +156,7 @@ async function navigate(page) {
   app.innerHTML = '';
   app.appendChild(wrapper);
 
+  finishProgressBar();
   afterRender(page);
 
   const titles = {
@@ -333,31 +427,46 @@ async function renderRessources() {
 
 async function renderContact() {
   const content = await fetchPageContent('contact');
+  const user = getDiscordUser();
+
+  const formHtml = user ? `
+    <div class="contact-form-card">
+      <h3>📬 Envoyer un message</h3>
+      <div class="contact-user-badge">
+        ${user.avatar_url ? `<img src="${user.avatar_url}" class="comment-avatar" alt="${user.username}">` : ''}
+        <div>
+          <span class="comment-username">${user.username}</span>
+          <p class="form-hint" style="margin-top:2px">Connecté via Discord — je te répondrai sur ce compte.</p>
+        </div>
+        <button class="comment-change-btn" id="contact-logout-btn" style="margin-left:auto">Déconnexion</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="c-message">Message *</label>
+        <textarea class="form-textarea" id="c-message" placeholder="Bonjour Nathan ! Je voulais te dire..." rows="5" required></textarea>
+      </div>
+      <button class="btn-submit" id="contact-submit">
+        <i class="fas fa-paper-plane"></i> Envoyer
+      </button>
+      <div class="form-status" id="contact-status"></div>
+    </div>` : `
+    <div class="contact-form-card">
+      <h3>📬 Envoyer un message</h3>
+      <div class="comment-login-prompt" style="flex-direction:column;align-items:flex-start;gap:14px;border:none;padding:0">
+        <p style="font-size:.95rem;color:var(--text-muted);line-height:1.7">
+          Connecte-toi avec Discord pour m'envoyer un message.<br>
+          Je te répondrai directement sur ton compte Discord.
+        </p>
+        <button class="comment-discord-login-btn" id="contact-discord-login">
+          <i class="fab fa-discord"></i> Se connecter avec Discord
+        </button>
+      </div>
+    </div>`;
+
   return `
     ${pageHero(content, { label: 'Contact', title: 'Écris-moi', subtitle: 'Tu as une question, une idée de collab ou juste envie de discuter ? Je réponds vite.' })}
     <div class="page-content">
       <div class="contact-layout">
-        <div class="contact-form-card">
-          <h3>📬 Envoyer un message</h3>
-          <div class="form-group">
-            <label class="form-label" for="c-name">Prénom / Pseudo *</label>
-            <input class="form-input" type="text" id="c-name" placeholder="Nathan" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="c-discord">ID Discord *</label>
-            <input class="form-input" type="text" id="c-discord" placeholder="nathan#0000 ou 123456789" required>
-            <p class="form-hint">J'utiliserai ton ID Discord pour te répondre.</p>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="c-message">Message *</label>
-            <textarea class="form-textarea" id="c-message" placeholder="Bonjour Nathan ! Je voulais te dire..." rows="5" required></textarea>
-          </div>
-          <button class="btn-submit" id="contact-submit">
-            <i class="fas fa-paper-plane"></i> Envoyer
-          </button>
-          <div class="form-status" id="contact-status"></div>
-        </div>
-
+        <div id="contact-form-area">${formHtml}</div>
         <div class="contact-sidebar">
           <div class="contact-info-card">
             <h4>Retrouve-moi aussi ici</h4>
@@ -738,14 +847,393 @@ async function openBlogModal(id, table, pushState = true) {
     window.history.pushState({}, '', '?' + params.toString());
   }
   const label = table === 'blog' ? '📝 Article' : '🎓 Tutoriel';
+  const contentType = table === 'blog' ? 'blog' : 'tuto';
   const imgs = [data.image1_path, data.image2_path].filter(Boolean);
+
   openModal(`
     <div class="modal-tag">${label}</div>
     <h2>${data.title}</h2>
     <p style="font-size:.8rem;color:var(--text-dim);font-family:var(--font-code);margin-bottom:16px">${formatDate(data.created_at)}</p>
     ${imgs.length ? `<div class="modal-images">${imgs.map(s => `<img src="${s}" alt="">`).join('')}</div>` : ''}
-    <div>${nl2br(data.full_description || data.short_description || '')}</div>
+    <div style="margin-bottom:24px">${nl2br(data.full_description || data.short_description || '')}</div>
+
+    <div class="reactions-bar" id="reactions-bar-${id}">
+      <button class="reaction-btn" id="btn-like-${id}" data-type="like">
+        <i class="fas fa-thumbs-up"></i> <span id="count-like-${id}">—</span>
+      </button>
+      <button class="reaction-btn" id="btn-dislike-${id}" data-type="dislike">
+        <i class="fas fa-thumbs-down"></i> <span id="count-dislike-${id}">—</span>
+      </button>
+    </div>
+
+    <div class="comments-section" data-content-type="${contentType}">
+      <h4 class="comments-title">💬 Commentaires</h4>
+      <div id="comments-list-${id}" class="comments-list">
+        <div class="comments-loading"><i class="fas fa-spinner fa-spin"></i></div>
+      </div>
+      <div id="comment-form-area-${id}"></div>
+    </div>
   `);
+
+  loadReactions(id, contentType);
+  loadComments(id, contentType);
+  attachReactionListeners(id, contentType);
+  renderCommentForm(id, contentType);
+}
+
+function renderCommentForm(contentId, contentType) {
+  const area = document.getElementById(`comment-form-area-${contentId}`);
+  if (!area) return;
+  const user = getDiscordUser();
+
+  if (!user) {
+    area.innerHTML = `
+      <div class="comment-login-prompt">
+        <p>Connecte-toi avec Discord pour commenter et réagir.</p>
+        <button class="comment-discord-login-btn" id="discord-login-btn-${contentId}">
+          <i class="fab fa-discord"></i> Se connecter avec Discord
+        </button>
+      </div>`;
+    document.getElementById(`discord-login-btn-${contentId}`)?.addEventListener('click', loginWithDiscord);
+    return;
+  }
+
+  area.innerHTML = `
+    <div class="comment-form">
+      <div class="comment-user-badge">
+        ${user.avatar_url ? `<img src="${user.avatar_url}" class="comment-avatar" alt="${user.username}">` : `<div class="comment-avatar comment-avatar-fallback">${user.username.charAt(0).toUpperCase()}</div>`}
+        <span class="comment-username">${user.username}</span>
+        <button class="comment-change-btn" id="logout-comment-${contentId}">Déconnexion</button>
+      </div>
+      <textarea class="comment-textarea" id="comment-text-${contentId}" placeholder="Écris ton commentaire..." rows="3" maxlength="500"></textarea>
+      <div class="comment-form-footer">
+        <span class="comment-chars" id="comment-chars-${contentId}">0/500</span>
+        <button class="comment-submit-btn" id="comment-submit-${contentId}">
+          <i class="fas fa-paper-plane"></i> Publier
+        </button>
+      </div>
+      <div class="comment-error" id="comment-error-${contentId}"></div>
+    </div>`;
+
+  document.getElementById(`logout-comment-${contentId}`)?.addEventListener('click', async () => {
+    await logout();
+    renderCommentForm(contentId, contentType);
+    loadReactions(contentId, contentType);
+  });
+
+  const textarea  = document.getElementById(`comment-text-${contentId}`);
+  const charsEl   = document.getElementById(`comment-chars-${contentId}`);
+  const submitBtn = document.getElementById(`comment-submit-${contentId}`);
+  const errEl     = document.getElementById(`comment-error-${contentId}`);
+
+  textarea?.addEventListener('input', () => {
+    charsEl.textContent = `${textarea.value.length}/500`;
+  });
+
+  submitBtn?.addEventListener('click', async () => {
+    const msg = textarea?.value.trim();
+    errEl.textContent = '';
+    if (!msg) { errEl.textContent = 'Le commentaire ne peut pas être vide.'; return; }
+    if (msg.length > 500) { errEl.textContent = 'Maximum 500 caractères.'; return; }
+
+    const { data: banned } = await db.from('banned_words').select('word');
+    const lower = msg.toLowerCase();
+    const found = banned?.find(b => lower.includes(b.word.toLowerCase()));
+    if (found) { errEl.textContent = '⚠️ Ton commentaire contient un mot interdit.'; return; }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    try {
+      const { error } = await db.from('comments').insert({
+        content_id: contentId,
+        content_type: contentType,
+        user_id: _currentUser.id,
+        message: msg
+      });
+      if (error) throw error;
+      textarea.value = '';
+      charsEl.textContent = '0/500';
+      await loadComments(contentId, contentType);
+    } catch(e) {
+      errEl.textContent = `Erreur : ${e.message}`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier';
+    }
+  });
+}
+
+async function loadReactions(targetId, targetType) {
+  try {
+    const { data } = await db.from('reactions')
+      .select('reaction, user_id')
+      .eq('target_id', targetId)
+      .eq('target_type', targetType);
+
+    const likes    = data?.filter(r => r.reaction === 'like').length    || 0;
+    const dislikes = data?.filter(r => r.reaction === 'dislike').length || 0;
+
+    const el = (id) => document.getElementById(id);
+    if (el(`count-like-${targetId}`))    el(`count-like-${targetId}`).textContent    = likes;
+    if (el(`count-dislike-${targetId}`)) el(`count-dislike-${targetId}`).textContent = dislikes;
+
+    const user = getDiscordUser();
+    if (user) {
+      const mine = data?.find(r => r.user_id === user.id);
+      if (mine) el(`btn-${mine.reaction}-${targetId}`)?.classList.add('active');
+    }
+  } catch(_) {}
+}
+
+function attachReactionListeners(targetId, targetType) {
+  ['like', 'dislike'].forEach(type => {
+    const btn = document.getElementById(`btn-${type}-${targetId}`);
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const user = getDiscordUser();
+      if (!user) { loginWithDiscord(); return; }
+      await toggleReaction(targetId, targetType, type);
+      loadReactions(targetId, targetType);
+    });
+  });
+}
+
+async function toggleReaction(targetId, targetType, reaction) {
+  try {
+    const { data: rows } = await db.from('reactions')
+      .select('id, reaction')
+      .eq('target_id', targetId)
+      .eq('user_id', _currentUser.id)
+      .limit(1);
+
+    const existing = rows?.[0] ?? null;
+
+    if (existing) {
+      if (existing.reaction === reaction) {
+        await db.from('reactions').delete().eq('id', existing.id);
+      } else {
+        await db.from('reactions').update({ reaction }).eq('id', existing.id);
+      }
+      return;
+    }
+
+    const { error } = await db.from('reactions').insert({
+      target_id: targetId,
+      target_type: targetType,
+      user_id: _currentUser.id,
+      reaction
+    });
+
+    if (error?.code === '23505') {
+      await db.from('reactions')
+        .update({ reaction })
+        .eq('target_id', targetId)
+        .eq('user_id', _currentUser.id);
+    }
+  } catch(_) {}
+}
+
+async function loadComments(contentId, contentType) {
+  const list = document.getElementById(`comments-list-${contentId}`);
+  if (!list) return;
+  try {
+    const { data: comments, error: commentsErr } = await db.from('comments')
+      .select('id, user_id, message, created_at')
+      .eq('content_id', contentId)
+      .eq('content_type', contentType)
+      .eq('approved', true)
+      .order('created_at', { ascending: true });
+
+    if (commentsErr) throw commentsErr;
+
+    if (!comments || !comments.length) {
+      list.innerHTML = `<p class="no-comments">Aucun commentaire pour l'instant. Sois le premier !</p>`;
+      return;
+    }
+
+    const userIds = [...new Set(comments.map(c => c.user_id))];
+    const { data: profilesData } = await db.from('profiles')
+      .select('id, username, avatar_url')
+      .in('id', userIds);
+    const profilesMap = Object.fromEntries((profilesData || []).map(p => [p.id, p]));
+
+    const { data: allReactions } = await db.from('reactions')
+      .select('target_id, reaction, user_id')
+      .in('target_id', comments.map(c => c.id))
+      .eq('target_type', 'comment');
+
+    const myUid = _currentUser?.id;
+
+    list.innerHTML = comments.map(c => {
+      const profile   = profilesMap[c.user_id] || {};
+      const clikes    = allReactions?.filter(r => r.target_id === c.id && r.reaction === 'like').length    || 0;
+      const cdislikes = allReactions?.filter(r => r.target_id === c.id && r.reaction === 'dislike').length || 0;
+      const myReaction = allReactions?.find(r => r.target_id === c.id && r.user_id === myUid)?.reaction;
+      const avatar   = profile.avatar_url;
+      const username = profile.username || 'Inconnu';
+
+      const isOwn = !!myUid && !!c.user_id && c.user_id === myUid;
+
+      return `
+        <div class="comment-item" data-id="${c.id}">
+          <div class="comment-header">
+            ${avatar
+              ? `<img src="${avatar}" class="comment-avatar" alt="${username}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">`
+              : `<div class="comment-avatar comment-avatar-fallback">${username.charAt(0).toUpperCase()}</div>`}
+            <div class="comment-meta">
+              <span class="comment-username">${username}</span>
+              <span class="comment-date">${formatDate(c.created_at)}</span>
+            </div>
+            ${isOwn ? `
+              <div class="comment-menu-wrap">
+                <button class="comment-menu-btn" data-cid="${c.id}"><i class="fas fa-ellipsis"></i></button>
+                <div class="comment-menu-dropdown" id="menu-${c.id}" style="display:none">
+                  <button class="comment-menu-item comment-edit-btn" data-cid="${c.id}">
+                    <i class="fas fa-pen"></i> Modifier
+                  </button>
+                  <button class="comment-menu-item comment-delete-btn danger" data-cid="${c.id}">
+                    <i class="fas fa-trash"></i> Supprimer
+                  </button>
+                </div>
+              </div>` : ''}
+          </div>
+          <div class="comment-body-wrap">
+            <p class="comment-body" id="comment-body-${c.id}">${escapeHtml(c.message)}</p>
+            <div class="comment-edit-form" id="comment-edit-${c.id}" style="display:none">
+              <textarea class="comment-textarea" id="comment-edit-text-${c.id}" rows="2" maxlength="500">${escapeHtml(c.message)}</textarea>
+              <div class="comment-edit-actions">
+                <button class="comment-cancel-btn comment-edit-cancel" data-cid="${c.id}">Annuler</button>
+                <button class="comment-submit-btn comment-edit-save" data-cid="${c.id}">
+                  <i class="fas fa-floppy-disk"></i> Sauvegarder
+                </button>
+              </div>
+            </div>
+            <div class="comment-delete-confirm" id="delete-confirm-${c.id}" style="display:none">
+              <p>Supprimer ce commentaire ?</p>
+              <div class="comment-edit-actions">
+                <button class="comment-cancel-btn comment-delete-cancel" data-cid="${c.id}">Annuler</button>
+                <button class="comment-submit-btn danger comment-delete-confirm-btn" data-cid="${c.id}">
+                  <i class="fas fa-trash"></i> Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="comment-reactions">
+            <button class="comment-reaction-btn ${myReaction==='like'?'active':''}" data-cid="${c.id}" data-type="like">
+              <i class="fas fa-thumbs-up"></i> ${clikes}
+            </button>
+            <button class="comment-reaction-btn ${myReaction==='dislike'?'active':''}" data-cid="${c.id}" data-type="dislike">
+              <i class="fas fa-thumbs-down"></i> ${cdislikes}
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+
+    list.querySelectorAll('.comment-reaction-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!_currentUser) { loginWithDiscord(); return; }
+        await toggleReaction(btn.dataset.cid, 'comment', btn.dataset.type);
+        loadComments(contentId, contentType);
+      });
+    });
+
+    list.querySelectorAll('.comment-menu-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cid = btn.dataset.cid;
+        const dropdown = document.getElementById(`menu-${cid}`);
+        document.querySelectorAll('.comment-menu-dropdown').forEach(d => {
+          if (d.id !== `menu-${cid}`) d.style.display = 'none';
+        });
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+      });
+    });
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.comment-menu-dropdown').forEach(d => d.style.display = 'none');
+    }, { once: true });
+
+    list.querySelectorAll('.comment-edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cid = btn.dataset.cid;
+        document.getElementById(`menu-${cid}`).style.display = 'none';
+        document.getElementById(`comment-body-${cid}`).style.display = 'none';
+        document.getElementById(`comment-edit-${cid}`).style.display = 'block';
+        document.getElementById(`comment-edit-text-${cid}`).focus();
+      });
+    });
+
+    list.querySelectorAll('.comment-edit-cancel').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cid = btn.dataset.cid;
+        document.getElementById(`comment-body-${cid}`).style.display = '';
+        document.getElementById(`comment-edit-${cid}`).style.display = 'none';
+      });
+    });
+
+    list.querySelectorAll('.comment-edit-save').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const cid = btn.dataset.cid;
+        const msg = document.getElementById(`comment-edit-text-${cid}`)?.value.trim();
+        if (!msg) return;
+        const { data: banned } = await db.from('banned_words').select('word');
+        const found = banned?.find(b => msg.toLowerCase().includes(b.word.toLowerCase()));
+        if (found) return;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+          await db.from('comments').update({ message: msg }).eq('id', cid).eq('user_id', _currentUser.id);
+          await loadComments(contentId, contentType);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Sauvegarder';
+        }
+      });
+    });
+
+    list.querySelectorAll('.comment-delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cid = btn.dataset.cid;
+        document.getElementById(`menu-${cid}`).style.display = 'none';
+        document.getElementById(`comment-body-${cid}`).style.display = 'none';
+        document.getElementById(`delete-confirm-${cid}`).style.display = 'block';
+      });
+    });
+
+    list.querySelectorAll('.comment-delete-cancel').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cid = btn.dataset.cid;
+        document.getElementById(`comment-body-${cid}`).style.display = '';
+        document.getElementById(`delete-confirm-${cid}`).style.display = 'none';
+      });
+    });
+
+    list.querySelectorAll('.comment-delete-confirm-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+          await db.from('comments').delete().eq('id', btn.dataset.cid).eq('user_id', _currentUser.id);
+          await loadComments(contentId, contentType);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-trash"></i> Supprimer';
+        }
+      });
+    });
+
+  } catch(e) {
+    list.innerHTML = `<p style="color:#fca5a5;font-size:.85rem">Erreur : ${e.message}</p>`;
+  }
+}
+
+function escapeHtml(str) {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 function attachCardModal(type) {
@@ -801,49 +1289,55 @@ async function openCollabModal(id, pushState = true) {
 }
 
 function attachContactForm() {
+  document.getElementById('contact-discord-login')?.addEventListener('click', async () => {
+    await loginWithDiscord();
+    const unsub = db.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        unsub.data.subscription.unsubscribe();
+        navigate('contact');
+      }
+    });
+  });
+
+  document.getElementById('contact-logout-btn')?.addEventListener('click', async () => {
+    await logout();
+    navigate('contact');
+  });
+
   const btn    = document.getElementById('contact-submit');
   const status = document.getElementById('contact-status');
-
   if (!btn) return;
 
   btn.addEventListener('click', async () => {
-    const name    = document.getElementById('c-name')?.value.trim();
-    const discord = document.getElementById('c-discord')?.value.trim();
+    const user    = getDiscordUser();
     const message = document.getElementById('c-message')?.value.trim();
 
-    if (!name || !discord || !message) {
-      showStatus('error', '⚠️ Tous les champs marqués * sont obligatoires.');
-      return;
+    function showStatus(type, msg) {
+      status.className = `form-status ${type}`;
+      status.textContent = msg;
     }
+
+    if (!user)    { showStatus('error', '⚠️ Connecte-toi avec Discord d\'abord.'); return; }
+    if (!message) { showStatus('error', '⚠️ Le message ne peut pas être vide.'); return; }
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi…';
 
     try {
       const { error } = await db.from('contact_messages').insert([{
-        name,
-        discord_id: discord,
+        name:       user.username,
+        discord_id: user.discord_id || _currentUser.id,
         message,
         created_at: new Date().toISOString()
       }]);
-
       if (error) throw error;
-
       showStatus('success', '✅ Message envoyé ! Je te contacte bientôt sur Discord.');
-      document.getElementById('c-name').value    = '';
-      document.getElementById('c-discord').value = '';
       document.getElementById('c-message').value = '';
-
     } catch(e) {
       showStatus('error', `❌ Erreur : ${e.message}`);
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer';
-    }
-
-    function showStatus(type, msg) {
-      status.className = `form-status ${type}`;
-      status.textContent = msg;
     }
   });
 }
