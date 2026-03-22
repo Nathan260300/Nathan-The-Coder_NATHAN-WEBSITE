@@ -1326,7 +1326,7 @@ function attachContactForm() {
     try {
       const { error } = await db.from('contact_messages').insert([{
         name:       user.username,
-        discord_id: user.discord_id || _currentUser.id,
+        discord_id: _currentUser.id,
         message,
         created_at: new Date().toISOString()
       }]);
