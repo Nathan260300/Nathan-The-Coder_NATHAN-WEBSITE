@@ -88,7 +88,7 @@ async function logout() {
   _currentUser = null;
 }
 
-const PAGES = ['home', 'projets', 'blog', 'tuto', 'ressources', 'competences', 'contact', 'changelog', 'moi', 'collaborations'];
+const PAGES = ['home', 'projets', 'blog', 'tuto', 'ressources', 'competences', 'contact', 'changelog', 'moi', 'collaborations', 'cgu', 'confidentialite', 'cookies', 'mentions-legales'];
 
 function getPage() {
   const params = new URLSearchParams(window.location.search);
@@ -149,7 +149,11 @@ async function navigate(page) {
       case 'contact':        wrapper.innerHTML = await renderContact();         break;
       case 'changelog':      wrapper.innerHTML = await renderChangelog();       break;
       case 'moi':            wrapper.innerHTML = await renderMoi();             break;
-      case 'collaborations': wrapper.innerHTML = await renderCollaborations();  break;
+      case 'collaborations':    wrapper.innerHTML = await renderCollaborations();   break;
+      case 'cgu':               wrapper.innerHTML = renderLegal('cgu');              break;
+      case 'confidentialite':   wrapper.innerHTML = renderLegal('confidentialite');  break;
+      case 'cookies':           wrapper.innerHTML = renderLegal('cookies');          break;
+      case 'mentions-legales':  wrapper.innerHTML = renderLegal('mentions-legales'); break;
       default:               wrapper.innerHTML = render404();
     }
   } catch (err) {
@@ -166,7 +170,9 @@ async function navigate(page) {
   const titles = {
     home: 'Accueil', projets: 'Projets', blog: 'Blog', tuto: 'Tutos',
     ressources: 'Ressources', competences: 'Compétences', contact: 'Contact',
-    changelog: 'Changelog', moi: 'À propos', collaborations: 'Collaborations'
+    changelog: 'Changelog', moi: 'À propos', collaborations: 'Collaborations',
+    'cgu': 'CGU', 'confidentialite': 'Politique de confidentialité',
+    'cookies': 'Politique des cookies', 'mentions-legales': 'Mentions légales'
   };
   document.title = `${titles[page] || page} — Nathan The Coder`;
 
@@ -668,6 +674,93 @@ async function renderCollaborations() {
     ${pageHero(pc, { label: 'Collaborations', title: 'Mes collabs', subtitle: 'Projets réalisés en collaboration avec d\'autres développeurs et créateurs.' })}
     <div class="page-content">
       <div class="cards-grid" data-modal-type="collaboration">${cards}</div>
+    </div>`;
+}
+
+function renderLegal(page) {
+  const pages = {
+    'cgu': {
+      title: "Conditions Générales d'Utilisation",
+      icon: '📋',
+      sections: [
+        { title: '1. Objet', content: `Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation du site nathan-the-coder.netlify.app (ci-après "le Site"), portfolio personnel de Nathan, développeur web et créateur de bots Discord.` },
+        { title: '2. Accès au site', content: `Le Site est accessible gratuitement à tout utilisateur disposant d'un accès à Internet. Tous les frais liés à l'accès au Site (connexion, matériel) sont à la charge de l'utilisateur.` },
+        { title: '3. Propriété intellectuelle', content: `Le code source du Site est publié sous licence GNU GPL v3. Les contenus (articles, tutoriels, projets) sont la propriété de Nathan. Toute reproduction est soumise à autorisation préalable, sauf mentions contraires.` },
+        { title: '4. Commentaires et interactions', content: `Les utilisateurs peuvent laisser des commentaires et réagir aux articles via une connexion Discord OAuth. En publiant un commentaire, l'utilisateur s'engage à respecter les règles de bonne conduite et s'interdit tout contenu illicite, offensant ou spam. Les commentaires peuvent être modérés ou supprimés sans préavis.` },
+        { title: '5. Responsabilité', content: `Nathan ne saurait être tenu responsable des dommages directs ou indirects résultant de l'utilisation du Site. Les informations publiées sont données à titre indicatif et peuvent évoluer sans préavis.` },
+        { title: '6. Droit applicable', content: `Les présentes CGU sont soumises au droit français. Tout litige relatif à leur interprétation sera soumis aux tribunaux compétents français.` },
+      ]
+    },
+    'confidentialite': {
+      title: 'Politique de Confidentialité',
+      icon: '🔒',
+      sections: [
+        { title: '1. Responsable du traitement', content: `Nathan, développeur web indépendant, est responsable du traitement des données collectées via le Site nathan-the-coder.netlify.app.` },
+        { title: '2. Données collectées', content: `Lors de la connexion via Discord OAuth, les données suivantes sont collectées et stockées : identifiant Discord, nom d'utilisateur Discord, avatar Discord. Ces données sont utilisées uniquement pour identifier l'auteur des commentaires et messages de contact.` },
+        { title: '3. Finalités du traitement', content: `Les données sont collectées pour permettre l'identification des utilisateurs laissant des commentaires ou envoyant des messages de contact, et pour afficher le pseudo et l'avatar Discord associés aux contributions.` },
+        { title: '4. Durée de conservation', content: `Les données sont conservées tant que le compte Discord utilisé est actif sur le Site. L'utilisateur peut demander la suppression de ses données en envoyant un message via le formulaire de contact.` },
+        { title: '5. Partage des données', content: `Aucune donnée personnelle n'est vendue, louée ou transmise à des tiers. Les données sont hébergées chez Supabase (supabase.com) dont la politique de confidentialité est accessible sur leur site.` },
+        { title: '6. Droits des utilisateurs', content: `Conformément au RGPD, tout utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données. Pour exercer ces droits, utilisez le formulaire de contact du Site.` },
+      ]
+    },
+    'cookies': {
+      title: 'Politique des Cookies',
+      icon: '🍪',
+      sections: [
+        { title: "Qu'est-ce qu'un cookie ?", content: `Un cookie est un petit fichier texte déposé sur votre appareil lors de la visite d'un site web. Il permet de mémoriser des informations entre les visites.` },
+        { title: 'Cookies utilisés sur ce site', content: `Le Site utilise uniquement des cookies techniques strictement nécessaires à son fonctionnement. Aucun cookie publicitaire ou de tracking tiers n'est utilisé.` },
+        { title: 'Cookie de session Supabase', content: `Lors de la connexion via Discord OAuth, un cookie de session est créé par Supabase pour maintenir votre connexion. Ce cookie est supprimé à la déconnexion ou à l'expiration de la session.` },
+        { title: 'LocalStorage', content: `Le Site utilise le localStorage de votre navigateur pour mémoriser certaines préférences locales. Ces données ne sont pas transmises à des serveurs tiers.` },
+        { title: 'Gestion des cookies', content: `Vous pouvez configurer votre navigateur pour refuser les cookies ou être alerté de leur dépôt. Notez que certaines fonctionnalités du Site (commentaires, contact) ne seront plus disponibles si vous refusez les cookies de session.` },
+      ]
+    },
+    'mentions-legales': {
+      title: 'Mentions Légales',
+      icon: '⚖️',
+      sections: [
+        { title: 'Éditeur du site', content: `Le site nathan-the-coder.netlify.app est édité par Nathan, développeur web indépendant et créateur de bots Discord, agissant à titre personnel.` },
+        { title: 'Hébergement', content: `Le Site est hébergé par Netlify, Inc. — 512 2nd Street, Suite 200, San Francisco, CA 94107, États-Unis. Les données (commentaires, messages) sont stockées chez Supabase — 970 Toa Payoh North, #07-04, Singapour.` },
+        { title: 'Propriété intellectuelle', content: `Le code source du Site est publié sous licence libre GNU GPL v3. Les contenus éditoriaux (articles, tutoriels, descriptions de projets) restent la propriété de Nathan sauf mention contraire. Toute reproduction sans autorisation est interdite.` },
+        { title: 'Données personnelles', content: `Le traitement des données personnelles des utilisateurs est décrit dans la Politique de Confidentialité accessible depuis ce Site. Pour toute demande relative à vos données, utilisez le formulaire de contact.` },
+        { title: 'Liens hypertextes', content: `Le Site peut contenir des liens vers des sites tiers. Nathan ne saurait être tenu responsable du contenu de ces sites externes et de l'usage qui pourrait être fait des informations qui y figurent.` },
+        { title: 'Contact', content: `Pour toute question relative au fonctionnement du Site ou à vos données personnelles, vous pouvez contacter Nathan via le formulaire de contact disponible sur le Site ou via le serveur Discord communautaire.` },
+      ]
+    }
+  };
+
+  const p = pages[page];
+  if (!p) return render404();
+
+  const otherPages = [
+    { id: 'cgu',            label: 'CGU' },
+    { id: 'confidentialite', label: 'Confidentialité' },
+    { id: 'cookies',         label: 'Cookies' },
+    { id: 'mentions-legales', label: 'Mentions légales' },
+  ].filter(x => x.id !== page);
+
+  return `
+    <div class="legal-page">
+      <div class="legal-hero">
+        <a href="?p=home" data-page="home" class="legal-back-btn">
+          <i class="fas fa-arrow-left"></i> Retour
+        </a>
+        <div class="legal-hero-tag">${p.icon} Légal</div>
+        <h1 class="legal-title">${p.title}</h1>
+        <p class="legal-updated">Dernière mise à jour : mars 2026</p>
+        <div class="legal-sibling-nav">
+          ${otherPages.map(x => `<a href="?p=${x.id}" data-page="${x.id}" class="legal-sibling-link">${x.label}</a>`).join('')}
+        </div>
+      </div>
+      <div class="legal-body">
+        ${p.sections.map((s, i) => `
+          <div class="legal-block">
+            <div class="legal-block-num">${String(i + 1).padStart(2, '0')}</div>
+            <div class="legal-block-content">
+              <h3>${s.title}</h3>
+              <p>${s.content}</p>
+            </div>
+          </div>`).join('')}
+      </div>
     </div>`;
 }
 
