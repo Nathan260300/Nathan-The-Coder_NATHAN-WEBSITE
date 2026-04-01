@@ -2180,8 +2180,6 @@ input, textarea, select {
   margin-bottom: 20px;
 }
 
-
-/* ── Footer legal links ── */
 .footer-legal {
   display: flex;
   flex-wrap: wrap;
@@ -2198,7 +2196,6 @@ input, textarea, select {
 }
 .footer-legal a:hover { color: var(--accent); }
 
-/* ── Legal pages ── */
 .legal-page {
   max-width: 780px;
   margin: 0 auto;
