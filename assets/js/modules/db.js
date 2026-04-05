@@ -1,4 +1,4 @@
-import { getState, setState } from './state.js';
+import { getState, setState, initState } from './state.js';
 
 const SUPABASE_URL     = 'https://hscsixqyszamzayemyra.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_mn40HNV14AbJmXA3veAqMQ_VdkOEPFd';
@@ -32,6 +32,7 @@ async function fetchPageContent(page) {
 function getDiscordUser() {
   const user = getState('currentUser');
   if (!user) return null;
+  if (getState('loginProvider') === 'email') return null;
   return {
     id:         user.id,
     username:   user.user_metadata?.full_name || user.user_metadata?.name || 'Inconnu',
@@ -56,6 +57,7 @@ async function loginWithDiscord() {
 async function logout() {
   await db.auth.signOut();
   setState('currentUser', null);
+  setState('loginProvider', null);
 }
 
 export { db, SUPABASE_URL, SUPABASE_ANON_KEY, fetchTable, fetchPageContent, getDiscordUser, loginWithDiscord, logout };

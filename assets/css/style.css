@@ -2323,3 +2323,120 @@ input, textarea, select {
   .legal-block { grid-template-columns: 36px 1fr; padding: 18px 16px; }
   .legal-title { font-size: 1.6rem; }
 }
+.contact-auth-intro {
+  font-size: .9rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.contact-auth-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.contact-auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+}
+.contact-auth-btn:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+.contact-auth-btn.discord { color: #fff; }
+.contact-auth-btn.discord i { font-size: 1.4rem; color: #5865f2; flex-shrink: 0; }
+.contact-auth-btn span { display: flex; flex-direction: column; gap: 2px; }
+.contact-auth-btn strong { font-family: var(--font-display); font-size: .95rem; color: var(--text); }
+.contact-auth-btn small { font-size: .78rem; color: var(--text-dim); }
+
+.contact-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--text-dim);
+  font-size: .78rem;
+  font-family: var(--font-code);
+}
+.contact-auth-divider::before,
+.contact-auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.contact-email-input-row {
+  display: flex;
+  gap: 8px;
+}
+.contact-email-input-row .form-input { flex: 1; }
+
+.contact-auth-send-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-display);
+  font-size: .82rem;
+  font-weight: 700;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+  height: 42px;
+  flex-shrink: 0;
+}
+.contact-auth-send-btn:hover:not(:disabled) { background: #fff; }
+.contact-auth-send-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.contact-otp-input {
+  font-family: var(--font-code) !important;
+  font-size: 1.1rem !important;
+  letter-spacing: .2em;
+  text-align: center;
+}
+
+.contact-otp-resend {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: .78rem;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: var(--font-body);
+  transition: color var(--transition);
+}
+.contact-otp-resend:hover { color: var(--accent); }
+
+.contact-auth-error {
+  font-size: .8rem;
+  color: #fca5a5;
+  margin-top: 8px;
+  min-height: 18px;
+}
+
+.contact-badge-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,212,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 1rem;
+  flex-shrink: 0;
+}

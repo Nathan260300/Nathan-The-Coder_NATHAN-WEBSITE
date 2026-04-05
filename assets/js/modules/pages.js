@@ -349,17 +349,29 @@ async function renderCollaborations() {
 }
 
 async function renderContact() {
-  const content = await fetchPageContent('contact');
-  const user    = getDiscordUser();
+  const content     = await fetchPageContent('contact');
+  const currentUser = getState('currentUser');
+  const user        = getDiscordUser();
+  const viaEmail    = getState('loginProvider') === 'email';
+  const viaDiscord  = !viaEmail;
+  const isLoggedIn  = !!currentUser;
 
-  const formHtml = user ? `
+  const displayName = viaEmail
+    ? currentUser?.email
+    : (user?.username || 'Inconnu');
+  const displayAvatar = viaDiscord && user?.avatar_url
+    ? `<img src="${user.avatar_url}" class="comment-avatar" alt="${displayName}">`
+    : `<div class="contact-badge-icon">${viaDiscord ? '<i class="fab fa-discord"></i>' : '<i class="fas fa-envelope"></i>'}</div>`;
+  const badgeLabel = viaDiscord ? 'Connecté via Discord' : 'Connecté via email';
+
+  const formHtml = isLoggedIn ? `
     <div class="contact-form-card">
       <h3>📬 Envoyer un message</h3>
       <div class="contact-user-badge">
-        ${user.avatar_url ? `<img src="${user.avatar_url}" class="comment-avatar" alt="${user.username}">` : ''}
+        ${displayAvatar}
         <div>
-          <span class="comment-username">${user.username}</span>
-          <p class="form-hint" style="margin-top:2px">Connecté via Discord — je te répondrai sur ce compte.</p>
+          <span class="comment-username">${displayName}</span>
+          <p class="form-hint" style="margin-top:2px">${badgeLabel}</p>
         </div>
         <button class="comment-change-btn" id="contact-logout-btn" style="margin-left:auto">Déconnexion</button>
       </div>
@@ -372,14 +384,38 @@ async function renderContact() {
     </div>` : `
     <div class="contact-form-card">
       <h3>📬 Envoyer un message</h3>
-      <div class="comment-login-prompt" style="flex-direction:column;align-items:flex-start;gap:14px;border:none;padding:0">
-        <p style="font-size:.95rem;color:var(--text-muted);line-height:1.7">
-          Connecte-toi avec Discord pour m'envoyer un message.<br>
-          Je te répondrai directement sur ton compte Discord.
-        </p>
-        <button class="comment-discord-login-btn" id="contact-discord-login">
-          <i class="fab fa-discord"></i> Se connecter avec Discord
+      <p class="contact-auth-intro">Identifie-toi pour m'envoyer un message. Je te répondrai via le moyen choisi.</p>
+      <div class="contact-auth-choice">
+        <button class="contact-auth-btn discord" id="contact-discord-login">
+          <i class="fab fa-discord"></i>
+          <span>
+            <strong>Discord</strong>
+            <small>Connexion via ton compte Discord</small>
+          </span>
         </button>
+        <div class="contact-auth-divider"><span>ou</span></div>
+        <div class="contact-email-flow" id="contact-email-flow">
+          <div id="contact-email-step">
+            <div class="contact-email-input-row">
+              <input class="form-input" type="email" id="contact-email-input" placeholder="ton@email.com">
+              <button class="contact-auth-send-btn" id="contact-email-send">
+                <i class="fas fa-paper-plane"></i> Envoyer le code
+              </button>
+            </div>
+            <div class="contact-auth-error" id="contact-email-error"></div>
+          </div>
+          <div id="contact-otp-step" style="display:none">
+            <p class="form-hint" id="contact-otp-hint"></p>
+            <div class="contact-email-input-row">
+              <input class="form-input contact-otp-input" type="text" id="contact-otp-input" placeholder="123456" maxlength="6" inputmode="numeric">
+              <button class="contact-auth-send-btn" id="contact-otp-verify">
+                <i class="fas fa-check"></i> Vérifier
+              </button>
+            </div>
+            <button class="contact-otp-resend" id="contact-otp-resend">Renvoyer le code</button>
+            <div class="contact-auth-error" id="contact-otp-error"></div>
+          </div>
+        </div>
       </div>
     </div>`;
 

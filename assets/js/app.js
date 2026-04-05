@@ -1,5 +1,5 @@
 import { db, getDiscordUser, loginWithDiscord, logout } from './modules/db.js';
-import { getState, setState } from './modules/state.js';
+import { getState, setState, initState } from './modules/state.js';
 import { getPage, navigate, initNavigation } from './modules/router.js';
 import { initModalListeners, checkModalParams, renderCommentForm, loadComments, loadReactions, openProjectModal, attachCardModal } from './modules/modals.js';
 
@@ -91,34 +91,107 @@ function attachContactForm() {
     navigate('contact');
   });
 
+  const sendBtn   = document.getElementById('contact-email-send');
+  const verifyBtn = document.getElementById('contact-otp-verify');
+  const resendBtn = document.getElementById('contact-otp-resend');
+
+  sendBtn?.addEventListener('click', async () => {
+    const email    = document.getElementById('contact-email-input')?.value.trim();
+    const errEl    = document.getElementById('contact-email-error');
+    errEl.textContent = '';
+    if (!email || !email.includes('@')) { errEl.textContent = '⚠️ Entre une adresse email valide.'; return; }
+
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+    const { error } = await db.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: undefined,
+      },
+    });
+
+    if (error) {
+      errEl.textContent = `❌ ${error.message}`;
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer le code';
+      return;
+    }
+
+    document.getElementById('contact-email-step').style.display = 'none';
+    document.getElementById('contact-otp-step').style.display   = 'block';
+    document.getElementById('contact-otp-hint').textContent = `Code envoyé à ${email}. Vérifie ta boîte mail.`;
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer le code';
+  });
+
+  verifyBtn?.addEventListener('click', async () => {
+    const email  = document.getElementById('contact-email-input')?.value.trim();
+    const token  = document.getElementById('contact-otp-input')?.value.trim();
+    const errEl  = document.getElementById('contact-otp-error');
+    errEl.textContent = '';
+    if (!token || token.length < 6) { errEl.textContent = '⚠️ Entre le code à 6 chiffres.'; return; }
+
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+    const { error } = await db.auth.verifyOtp({ email, token, type: 'email' });
+
+    if (error) {
+      errEl.textContent = `❌ Code incorrect ou expiré.`;
+      verifyBtn.disabled = false;
+      verifyBtn.innerHTML = '<i class="fas fa-check"></i> Vérifier';
+      return;
+    }
+
+    setState('loginProvider', 'email');
+    verifyBtn.disabled = false;
+    verifyBtn.innerHTML = '<i class="fas fa-check"></i> Vérifier';
+    navigate('contact');
+  });
+
+  resendBtn?.addEventListener('click', () => {
+    document.getElementById('contact-otp-step').style.display   = 'none';
+    document.getElementById('contact-email-step').style.display = 'block';
+    document.getElementById('contact-otp-error').textContent    = '';
+    document.getElementById('contact-otp-input').value          = '';
+  });
+
   const btn    = document.getElementById('contact-submit');
   const status = document.getElementById('contact-status');
   if (!btn) return;
 
   btn.addEventListener('click', async () => {
-    const user    = getDiscordUser();
-    const message = document.getElementById('c-message')?.value.trim();
+    const currentUser = getState('currentUser');
+    const user        = getDiscordUser();
+    const message     = document.getElementById('c-message')?.value.trim();
 
     function showStatus(type, msg) {
       status.className   = `form-status ${type}`;
       status.textContent = msg;
     }
 
-    if (!user)    { showStatus('error', "⚠️ Connecte-toi avec Discord d'abord."); return; }
-    if (!message) { showStatus('error', '⚠️ Le message ne peut pas être vide.'); return; }
+    if (!currentUser) { showStatus('error', "⚠️ Identifie-toi d'abord."); return; }
+    if (!message)     { showStatus('error', '⚠️ Le message ne peut pas être vide.'); return; }
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi…';
 
+    const isEmail   = getState('loginProvider') === 'email';
+    const name      = isEmail ? currentUser.email : (user?.username || 'Inconnu');
+    const contactId = isEmail ? currentUser.email : currentUser.id;
+
     try {
       const { error } = await db.from('contact_messages').insert([{
-        name:       user.username,
-        discord_id: getState('currentUser').id,
+        name,
+        discord_id: contactId,
         message,
         created_at: new Date().toISOString(),
       }]);
       if (error) throw error;
-      showStatus('success', '✅ Message envoyé ! Je te contacte bientôt sur Discord.');
+      const via = isEmail ? 'email' : 'Discord';
+      showStatus('success', `✅ Message envoyé ! Je te répondrai via ${via} dès que possible.`);
       document.getElementById('c-message').value = '';
     } catch(e) {
       showStatus('error', `❌ Erreur : ${e.message}`);
@@ -172,6 +245,8 @@ db.auth.onAuthStateChange((event, session) => {
 
   if (!getState('sessionReady')) { setState('sessionReady', true); return; }
 
+  if (event === 'SIGNED_IN') setState('loginProvider', getState('loginProvider') || 'discord');
+
   if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
     document.querySelectorAll('[id^="comment-form-area-"]').forEach(area => {
       const id = area.id.replace('comment-form-area-', '');
@@ -202,6 +277,7 @@ db.auth.getSession().then(({ data: { session } }) => {
   setState('currentUser', session?.user ?? null);
 });
 
+initState();
 initModalListeners();
 initNavigation();
 navigate(getPage()).then(() => checkModalParams());
