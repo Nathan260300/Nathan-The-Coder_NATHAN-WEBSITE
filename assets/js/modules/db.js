@@ -12,7 +12,6 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
-// Cache Supabase — évite les appels réseau répétés (TTL 60s)
 const _dbCache = new Map();
 function _cacheKey(table, opts) { return `${table}:${JSON.stringify(opts)}`; }
 

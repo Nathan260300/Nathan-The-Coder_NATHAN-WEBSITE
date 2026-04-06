@@ -5,16 +5,13 @@ import { getPage } from './router.js';
 
 function openModal(html) {
   const modal = document.getElementById('modal');
-  // Mémorise l'élément focusé avant ouverture pour le restaurer à la fermeture
   modal._lastFocus = document.activeElement;
   document.getElementById('modalContent').innerHTML = html;
   modal.classList.add('open');
-  // Focus sur le bouton fermer pour accessibilité
   requestAnimationFrame(() => {
     const closeBtn = document.getElementById('modalClose');
     if (closeBtn) closeBtn.focus();
   });
-  // Piège le focus dans la modale
   modal._trapFocus = (e) => {
     if (e.key !== 'Tab') return;
     const focusables = modal.querySelectorAll('a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])');
@@ -29,7 +26,6 @@ function openModal(html) {
 function closeModal() {
   const modal = document.getElementById('modal');
   modal.classList.remove('open');
-  // Restaurer le focus
   if (modal._trapFocus) document.removeEventListener('keydown', modal._trapFocus);
   if (modal._lastFocus && modal._lastFocus.focus) modal._lastFocus.focus();
   const params = new URLSearchParams(window.location.search);

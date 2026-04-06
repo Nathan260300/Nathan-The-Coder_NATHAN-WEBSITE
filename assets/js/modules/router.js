@@ -15,7 +15,6 @@ const PAGE_TITLES = {
   cookies: 'Politique des cookies', 'mentions-legales': 'Mentions légales',
 };
 
-// Cache simple en mémoire pour les pages statiques (hors auth)
 const PAGE_CACHE = new Map();
 const CACHEABLE_PAGES = new Set(['home', 'competences', 'ressources', 'changelog', 'moi', 'cgu', 'confidentialite', 'cookies', 'mentions-legales']);
 
@@ -53,7 +52,6 @@ function finishProgressBar() {
 async function navigate(page) {
   const app = document.getElementById('app');
 
-  // Mise à jour des liens nav (aria-current + classe active)
   document.querySelectorAll('[data-page]').forEach(el => {
     const isActive = el.dataset.page === page;
     el.classList.toggle('active', isActive);
@@ -125,7 +123,6 @@ function initNavigation() {
     burger.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
   });
 
-  // Fermer menu au clic extérieur
   document.addEventListener('click', e => {
     const nav = document.getElementById('nav');
     if (menu.classList.contains('open') && !nav.contains(e.target)) {
@@ -136,7 +133,6 @@ function initNavigation() {
     }
   });
 
-  // Fermer menu à Escape
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && menu.classList.contains('open')) {
       menu.classList.remove('open');
