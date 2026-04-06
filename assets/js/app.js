@@ -72,6 +72,9 @@ client.<span class="fn">on</span>(<span class="str">'ready'</span>, () => {
 
   document.querySelectorAll('#recent-projects .card[data-id]').forEach(card => {
     card.addEventListener('click', () => openProjectModal(card.dataset.id));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProjectModal(card.dataset.id); }
+    });
   });
 }
 

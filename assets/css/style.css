@@ -13,8 +13,8 @@
   --border-hover: rgba(255, 255, 255, 0.18);
 
   --text:         #e8eaf0;
-  --text-muted:   #7a8494;
-  --text-dim:     #4a5568;
+  --text-muted:   #9aa3b2; /* Amélioré : ratio 4.6:1 sur fond sombre */
+  --text-dim:     #6b7585;
 
   --accent:       #00d4ff;
   --accent-2:     #7c3aed;
@@ -30,6 +30,35 @@
 
   --transition:   0.22s cubic-bezier(0.4, 0, 0.2, 1);
   --nav-h:        68px;
+}
+
+/* Skip link accessibilité */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  transition: top 0.15s ease;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+/* Focus visible global */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 *, *::before, *::after {
@@ -70,20 +99,7 @@ input, textarea, select {
   opacity: 0.022;
   pointer-events: none;
   z-index: 0;
-}
-
-@keyframes grain-move {
-  0%  { transform: translate(0, 0); }
-  10% { transform: translate(-2%, -3%); }
-  20% { transform: translate(3%, 2%); }
-  30% { transform: translate(-1%, 4%); }
-  40% { transform: translate(2%, -1%); }
-  50% { transform: translate(-3%, 2%); }
-  60% { transform: translate(1%, -2%); }
-  70% { transform: translate(-2%, 3%); }
-  80% { transform: translate(3%, -3%); }
-  90% { transform: translate(-1%, 1%); }
- 100% { transform: translate(0, 0); }
+  contain: strict;
 }
 
 .bg-grid {
@@ -104,6 +120,8 @@ input, textarea, select {
   filter: blur(80px);
   pointer-events: none;
   z-index: 0;
+  will-change: transform;
+  contain: strict;
 }
 
 .blob-1 {
@@ -122,6 +140,11 @@ input, textarea, select {
   bottom: 10%;
   left: -100px;
   animation: blob-float 25s ease-in-out infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob { animation: none !important; }
+  .grain { animation: none !important; }
 }
 
 @keyframes blob-float {
@@ -143,8 +166,11 @@ input, textarea, select {
   padding: 0 clamp(20px, 5vw, 60px);
   background: rgba(8, 11, 16, 0.75);
   backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border);
   transition: background var(--transition);
+  will-change: transform;
+  contain: layout style;
 }
 
 .nav-brand {
@@ -246,7 +272,7 @@ input, textarea, select {
   border-radius: var(--radius-sm);
   background: var(--accent);
   color: #000;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   letter-spacing: 0.01em;
 }
 
@@ -271,7 +297,7 @@ input, textarea, select {
   height: 2px;
   background: var(--text);
   border-radius: 2px;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 .nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .nav-burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
@@ -286,11 +312,17 @@ input, textarea, select {
 
 .page {
   animation: page-in 0.35s ease forwards;
+  will-change: opacity, transform;
 }
 
 @keyframes page-in {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page { animation: none; opacity: 1; }
+  @keyframes page-in { from { opacity: 1; transform: none; } }
 }
 
 #nav-progress {
@@ -380,7 +412,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 28px;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -395,11 +427,17 @@ input, textarea, select {
   transition: opacity var(--transition);
 }
 
-.card:hover {
+.card:hover,
+.card:focus-visible {
   background: var(--bg-card-hover);
   border-color: var(--border-hover);
   transform: translateY(-3px);
   box-shadow: var(--shadow), var(--shadow-glow);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .card:hover::before { opacity: 1; }
@@ -454,7 +492,7 @@ input, textarea, select {
   color: var(--accent);
   opacity: 0;
   transform: translateX(-6px);
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 .card:hover .card-arrow { opacity: 1; transform: translateX(0); }
 
@@ -572,7 +610,7 @@ input, textarea, select {
   border-radius: var(--radius-sm);
   background: var(--accent);
   color: #000;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 
 .btn-primary:hover {
@@ -592,7 +630,7 @@ input, textarea, select {
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   color: var(--text-muted);
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 
 .btn-secondary:hover {
@@ -689,7 +727,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-muted);
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 .badge:hover {
   border-color: var(--border-hover);
@@ -704,6 +742,8 @@ input, textarea, select {
   margin-left: auto;
   margin-right: auto;
   padding: 0 clamp(20px, 6vw, 80px) clamp(60px, 8vw, 100px);
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
 }
 
 .section-header {
@@ -749,7 +789,7 @@ input, textarea, select {
   border-radius: var(--radius);
   padding: 24px 20px;
   text-align: center;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 
 .stat-card:hover {
@@ -784,7 +824,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 32px;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 
 .about-card:hover {
@@ -928,7 +968,7 @@ input, textarea, select {
   border-radius: var(--radius-sm);
   background: var(--accent);
   color: #000;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   margin-top: 8px;
 }
 
@@ -976,7 +1016,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 
 .contact-info-card:hover {
@@ -1060,7 +1100,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px 28px;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 
 .changelog-card:hover {
@@ -1135,7 +1175,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px 22px;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 
 .skill-card:hover {
@@ -1357,7 +1397,7 @@ input, textarea, select {
   background: var(--accent);
   color: #000;
   margin-top: 8px;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 .modal-link:hover { background: #fff; transform: translateY(-1px); }
 
@@ -1407,7 +1447,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   color: var(--text-dim);
   font-size: 1rem;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 
 .footer-links a:hover {
@@ -1785,7 +1825,7 @@ input, textarea, select {
   background: var(--bg-card);
   color: var(--text-muted);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 .reaction-btn:hover { border-color: var(--border-hover); color: var(--text); background: var(--bg-card-hover); }
 .reaction-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.08); }
@@ -1907,7 +1947,7 @@ input, textarea, select {
   background: none;
   color: var(--text-dim);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 .comment-reaction-btn:hover { border-color: var(--border-hover); color: var(--text); }
 .comment-reaction-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.06); }
@@ -1950,7 +1990,7 @@ input, textarea, select {
   font-size: 0.9rem;
   cursor: pointer;
   border: none;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   flex-shrink: 0;
 }
 .comment-verify-btn:hover { background: #fff; }
@@ -1985,7 +2025,7 @@ input, textarea, select {
   border-radius: 999px;
   padding: 2px 10px;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   margin-left: 4px;
   font-family: var(--font-body);
 }
@@ -2029,7 +2069,7 @@ input, textarea, select {
   border-radius: var(--radius-sm);
   padding: 7px 14px;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   font-family: var(--font-body);
 }
 .comment-cancel-btn:hover { color: var(--text); border-color: var(--border-hover); }
@@ -2047,7 +2087,7 @@ input, textarea, select {
   color: #000;
   border: none;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 .comment-submit-btn:hover:not(:disabled) { background: #fff; }
 .comment-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -2081,7 +2121,7 @@ input, textarea, select {
   color: #fff;
   border: none;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   white-space: nowrap;
 }
 .comment-discord-login-btn:hover {
@@ -2109,7 +2149,7 @@ input, textarea, select {
   background: none;
   border: none;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   opacity: 0;
 }
 .comment-item:hover .comment-menu-btn { opacity: 1; }
@@ -2141,7 +2181,7 @@ input, textarea, select {
   background: none;
   border: none;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   font-family: var(--font-body);
   text-align: left;
 }
@@ -2289,7 +2329,7 @@ input, textarea, select {
   padding: 5px 12px;
   border: 1px solid var(--border);
   border-radius: 999px;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
 }
 .legal-sibling-link:hover {
   color: var(--accent);
@@ -2370,7 +2410,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   background: var(--bg-card);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   text-align: left;
 }
 .contact-auth-btn:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
@@ -2424,7 +2464,7 @@ input, textarea, select {
   border: none;
   cursor: pointer;
   white-space: nowrap;
-  transition: all var(--transition);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition), box-shadow var(--transition);
   height: 44px;
   flex-shrink: 0;
   box-sizing: border-box;

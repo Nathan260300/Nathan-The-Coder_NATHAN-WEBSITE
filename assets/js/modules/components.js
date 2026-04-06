@@ -3,7 +3,9 @@ import { formatDate } from './utils.js';
 function buildCard(item, opts = {}) {
   const tag  = opts.tag  || '';
   const meta = opts.meta ?? formatDate(item.created_at);
-  const id   = opts.click ? `data-id="${item.id}" style="cursor:pointer"` : '';
+  const id   = opts.click
+    ? `data-id="${item.id}" tabindex="0" role="button" aria-label="${item.title || item.name || 'Voir les détails'}" style="cursor:pointer"`
+    : '';
 
   return `
     <article class="card" ${id}>
@@ -13,7 +15,7 @@ function buildCard(item, opts = {}) {
       ${meta ? `
         <div class="card-meta">
           <span>${meta}</span>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow" aria-hidden="true">→</span>
         </div>` : ''}
     </article>`;
 }

@@ -15,6 +15,10 @@ const PAGE_TITLES = {
   cookies: 'Politique des cookies', 'mentions-legales': 'Mentions légales',
 };
 
+// Cache simple en mémoire pour les pages statiques (hors auth)
+const PAGE_CACHE = new Map();
+const CACHEABLE_PAGES = new Set(['home', 'competences', 'ressources', 'changelog', 'moi', 'cgu', 'confidentialite', 'cookies', 'mentions-legales']);
+
 function getPage() {
   const p = (new URLSearchParams(window.location.search).get('p') || 'home').toLowerCase();
   return VALID_PAGES.includes(p) ? p : '404';
@@ -49,19 +53,34 @@ function finishProgressBar() {
 async function navigate(page) {
   const app = document.getElementById('app');
 
+  // Mise à jour des liens nav (aria-current + classe active)
   document.querySelectorAll('[data-page]').forEach(el => {
-    el.classList.toggle('active', el.dataset.page === page);
+    const isActive = el.dataset.page === page;
+    el.classList.toggle('active', isActive);
+    if (el.tagName === 'A') {
+      if (isActive) {
+        el.setAttribute('aria-current', 'page');
+      } else {
+        el.removeAttribute('aria-current');
+      }
+    }
   });
 
   startProgressBar();
-  app.innerHTML = '';
 
   const wrapper = document.createElement('div');
   wrapper.className = 'page';
 
   try {
-    const render = pages[page];
-    wrapper.innerHTML = render ? await render() : pages['404']();
+    let html;
+    if (CACHEABLE_PAGES.has(page) && PAGE_CACHE.has(page)) {
+      html = PAGE_CACHE.get(page);
+    } else {
+      const render = pages[page];
+      html = render ? await render() : pages['404']();
+      if (CACHEABLE_PAGES.has(page)) PAGE_CACHE.set(page, html);
+    }
+    wrapper.innerHTML = html;
   } catch(err) {
     console.error('Page render error:', err);
     wrapper.innerHTML = pages['error'](err.message);
@@ -84,25 +103,47 @@ function initNavigation() {
     if (!link) return;
     e.preventDefault();
     const p = link.dataset.page;
-    document.getElementById('navMenu').classList.remove('open');
-    document.getElementById('navBurger').classList.remove('open');
+    const menu   = document.getElementById('navMenu');
+    const burger = document.getElementById('navBurger');
+    menu.classList.remove('open');
+    burger.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', 'Ouvrir le menu');
     if (getPage() === p) return;
     window.history.pushState({}, '', `?p=${p}`);
     navigate(p);
   });
 
-  document.getElementById('navBurger').addEventListener('click', e => {
+  const burger = document.getElementById('navBurger');
+  const menu   = document.getElementById('navMenu');
+
+  burger.addEventListener('click', e => {
     e.stopPropagation();
-    document.getElementById('navMenu').classList.toggle('open');
-    document.getElementById('navBurger').classList.toggle('open');
+    const isOpen = menu.classList.toggle('open');
+    burger.classList.toggle('open', isOpen);
+    burger.setAttribute('aria-expanded', String(isOpen));
+    burger.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
   });
 
+  // Fermer menu au clic extérieur
   document.addEventListener('click', e => {
-    const nav  = document.getElementById('nav');
-    const menu = document.getElementById('navMenu');
+    const nav = document.getElementById('nav');
     if (menu.classList.contains('open') && !nav.contains(e.target)) {
       menu.classList.remove('open');
-      document.getElementById('navBurger').classList.remove('open');
+      burger.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+      burger.setAttribute('aria-label', 'Ouvrir le menu');
+    }
+  });
+
+  // Fermer menu à Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menu.classList.contains('open')) {
+      menu.classList.remove('open');
+      burger.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+      burger.setAttribute('aria-label', 'Ouvrir le menu');
+      burger.focus();
     }
   });
 

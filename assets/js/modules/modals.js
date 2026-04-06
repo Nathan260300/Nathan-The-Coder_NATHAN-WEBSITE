@@ -5,12 +5,33 @@ import { getPage } from './router.js';
 
 function openModal(html) {
   const modal = document.getElementById('modal');
+  // Mémorise l'élément focusé avant ouverture pour le restaurer à la fermeture
+  modal._lastFocus = document.activeElement;
   document.getElementById('modalContent').innerHTML = html;
   modal.classList.add('open');
+  // Focus sur le bouton fermer pour accessibilité
+  requestAnimationFrame(() => {
+    const closeBtn = document.getElementById('modalClose');
+    if (closeBtn) closeBtn.focus();
+  });
+  // Piège le focus dans la modale
+  modal._trapFocus = (e) => {
+    if (e.key !== 'Tab') return;
+    const focusables = modal.querySelectorAll('a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])');
+    const first = focusables[0];
+    const last  = focusables[focusables.length - 1];
+    if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+    else            { if (document.activeElement === last)  { e.preventDefault(); first.focus(); } }
+  };
+  document.addEventListener('keydown', modal._trapFocus);
 }
 
 function closeModal() {
-  document.getElementById('modal').classList.remove('open');
+  const modal = document.getElementById('modal');
+  modal.classList.remove('open');
+  // Restaurer le focus
+  if (modal._trapFocus) document.removeEventListener('keydown', modal._trapFocus);
+  if (modal._lastFocus && modal._lastFocus.focus) modal._lastFocus.focus();
   const params = new URLSearchParams(window.location.search);
   const hasModal = ['projet', 'blog', 'tuto', 'collab'].some(k => params.has(k));
   if (hasModal) {
@@ -141,10 +162,14 @@ async function openCollabModal(id, pushState = true) {
 function attachCardModal(type) {
   const tableMap = { project: 'projects', blog: 'blog', tuto: 'tutos' };
   document.querySelectorAll(`.cards-grid[data-modal-type="${type}"] .card[data-id]`).forEach(card => {
-    card.addEventListener('click', () => {
-      if (type === 'project')          openProjectModal(card.dataset.id);
+    const openCard = () => {
+      if (type === 'project')            openProjectModal(card.dataset.id);
       else if (type === 'collaboration') openCollabModal(card.dataset.id);
       else                               openBlogModal(card.dataset.id, tableMap[type]);
+    };
+    card.addEventListener('click', openCard);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCard(); }
     });
   });
 }

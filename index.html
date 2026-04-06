@@ -10,38 +10,41 @@
   <meta property="og:title" content="Nathan The Coder">
   <meta property="og:description" content="Développeur web & bot Discord.">
   <meta property="og:image" content="assets/nathan.jpg">
-  <meta property="og:type" content="website">
   <meta property="og:url" content="https://nathan-the-coder.netlify.app">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nathan The Coder">
   <meta name="twitter:description" content="Développeur web & bot Discord.">
   <meta name="twitter:image" content="assets/nathan.jpg">
+  <meta name="theme-color" content="#080b10">
   <link rel="icon" href="assets/favicon/favicon.ico" type="image/x-icon">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
   <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
   <link rel="manifest" href="assets/favicon/site.webmanifest">
   <title>Nathan The Coder</title>
-  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"></noscript>
+  <link rel="preload" href="assets/css/style.css" as="style">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <div class="grain"></div>
-  <div class="bg-grid"></div>
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
+  <a href="#app" class="skip-link">Aller au contenu principal</a>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="blob blob-1" aria-hidden="true"></div>
+  <div class="blob blob-2" aria-hidden="true"></div>
 
   <nav id="nav">
-    <a href="?p=home" class="nav-brand" data-page="home">
-      <img src="assets/nathan.jpg" alt="Nathan The Coder" class="nav-logo-img">
+    <a href="?p=home" class="nav-brand" data-page="home" aria-label="Nathan The Coder — Accueil">
+      <img src="assets/nathan.jpg" alt="" width="36" height="36" class="nav-logo-img" aria-hidden="true" fetchpriority="high">
       <span>Nathan<span class="accent">.</span></span>
     </a>
-    <button class="nav-burger" id="navBurger" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <button class="nav-burger" id="navBurger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navMenu">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
     </button>
     <div class="nav-menu" id="navMenu">
       <div class="nav-links">
@@ -62,7 +65,7 @@
     <div id="nav-progress"></div>
   </nav>
 
-  <main id="app">
+  <main id="app" role="main" aria-live="polite" aria-atomic="true">
     <div class="page-loader" id="pageLoader">
       <div class="loader-ring"></div>
     </div>
@@ -72,15 +75,15 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <div class="footer-brand-top">
-          <img src="assets/nathan.jpg" alt="Nathan The Coder" class="footer-logo-img">
+          <img src="assets/nathan.jpg" alt="" width="36" height="36" class="footer-logo-img" aria-hidden="true" loading="lazy">
           <span class="footer-name">Nathan<span class="accent">.</span></span>
         </div>
         <p>Développeur web & bot Discord</p>
       </div>
       <div class="footer-links">
-        <a href="https://github.com/nathan260300" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
-        <a href="https://discord.gg/hvK9dhSKQF" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>
-        <a href="https://youtube.com/@nathan26060" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+        <a href="https://github.com/nathan260300" target="_blank" rel="noopener" aria-label="GitHub de Nathan (nouvelle fenêtre)"><i class="fab fa-github" aria-hidden="true"></i></a>
+        <a href="https://discord.gg/hvK9dhSKQF" target="_blank" rel="noopener" aria-label="Serveur Discord de Nathan (nouvelle fenêtre)"><i class="fab fa-discord" aria-hidden="true"></i></a>
+        <a href="https://youtube.com/@nathan26060" target="_blank" rel="noopener" aria-label="Chaîne YouTube de Nathan (nouvelle fenêtre)"><i class="fab fa-youtube" aria-hidden="true"></i></a>
       </div>
       <div class="footer-copy">
         <span>© 2026 Nathan The Coder — GNU GPL v3</span>
@@ -95,10 +98,10 @@
     </div>
   </footer>
 
-  <div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-backdrop" id="modalBackdrop"></div>
     <div class="modal-box">
-      <button class="modal-close" id="modalClose" aria-label="Fermer">&times;</button>
+      <button class="modal-close" id="modalClose" aria-label="Fermer la modale">&times;</button>
       <div id="modalContent"></div>
     </div>
   </div>
