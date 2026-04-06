@@ -13,7 +13,7 @@
   --border-hover: rgba(255, 255, 255, 0.18);
 
   --text:         #e8eaf0;
-  --text-muted:   #9aa3b2; /* Amélioré : ratio 4.6:1 sur fond sombre */
+  --text-muted:   #9aa3b2;
   --text-dim:     #6b7585;
 
   --accent:       #00d4ff;
@@ -32,7 +32,6 @@
   --nav-h:        68px;
 }
 
-/* Skip link accessibilité */
 .skip-link {
   position: absolute;
   top: -100%;
@@ -51,7 +50,6 @@
   top: 8px;
 }
 
-/* Focus visible global */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
