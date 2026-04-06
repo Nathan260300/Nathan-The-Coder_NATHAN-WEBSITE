@@ -30,8 +30,8 @@ async function renderHome() {
           à des idées techniques.
         </p>
         <div class="home-cta">
-          <a href="?p=projets" class="btn-primary"><i class="fas fa-folder-open"></i> Voir mes projets</a>
-          <a href="?p=contact" class="btn-secondary"><i class="fas fa-paper-plane"></i> Me contacter</a>
+          <a href="?p=projets" data-page="projets" class="btn-primary"><i class="fas fa-folder-open"></i> Voir mes projets</a>
+          <a href="?p=contact" data-page="contact" class="btn-secondary"><i class="fas fa-paper-plane"></i> Me contacter</a>
         </div>
       </div>
       <div class="home-terminal">
@@ -361,7 +361,7 @@ async function renderContact() {
     : (user?.username || 'Inconnu');
   const displayAvatar = viaDiscord && user?.avatar_url
     ? `<img src="${user.avatar_url}" class="comment-avatar" alt="${displayName}">`
-    : `<div class="contact-badge-icon">${viaDiscord ? '<i class="fab fa-discord"></i>' : '<i class="fas fa-envelope"></i>'}</div>`;
+    : `<div class="contact-badge-icon"><i class="${viaDiscord ? 'fab fa-discord' : 'fas fa-envelope'}"></i></div>`;
   const badgeLabel = viaDiscord ? 'Connecté via Discord' : 'Connecté via email';
 
   const formHtml = isLoggedIn ? `
@@ -462,9 +462,9 @@ const LEGAL_PAGES = {
       { title: '1. Responsable du traitement', content: `Nathan, développeur web indépendant, est responsable du traitement des données collectées via le Site nathan-the-coder.netlify.app.` },
       { title: '2. Données collectées', content: `Lors de la connexion via Discord OAuth, les données suivantes sont collectées et stockées : identifiant Discord, nom d'utilisateur Discord, avatar Discord. Ces données sont utilisées uniquement pour identifier l'auteur des commentaires et messages de contact.` },
       { title: '3. Finalités du traitement', content: `Les données sont collectées pour permettre l'identification des utilisateurs laissant des commentaires ou envoyant des messages de contact, et pour afficher le pseudo et l'avatar Discord associés aux contributions.` },
-      { title: '4. Durée de conservation', content: `Les données sont conservées tant que le compte Discord utilisé est actif sur le Site. L'utilisateur peut demander la suppression de ses données en envoyant un message via le formulaire de contact.` },
+      { title: '4. Durée de conservation', content: `Les données sont conservées tant que le compte Discord utilisé est actif sur le Site. L'utilisateur peut demander la suppression de ses données via le formulaire de contact du Site.` },
       { title: '5. Partage des données', content: `Aucune donnée personnelle n'est vendue, louée ou transmise à des tiers. Les données sont hébergées chez Supabase (supabase.com) dont la politique de confidentialité est accessible sur leur site.` },
-      { title: '6. Droits des utilisateurs', content: `Conformément au RGPD, tout utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données. Pour exercer ces droits, utilisez le formulaire de contact du Site.` },
+      { title: '6. Droits des utilisateurs', content: `Conformément au RGPD, tout utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données. Pour exercer ces droits, utilisez le formulaire de contact du Site ou envoyez un message via Discord.` },
     ],
   },
   cookies: {
@@ -485,7 +485,7 @@ const LEGAL_PAGES = {
       { title: 'Propriété intellectuelle', content: `Le code source du Site est publié sous licence libre GNU GPL v3. Les contenus éditoriaux (articles, tutoriels, descriptions de projets) restent la propriété de Nathan sauf mention contraire. Toute reproduction sans autorisation est interdite.` },
       { title: 'Données personnelles', content: `Le traitement des données personnelles des utilisateurs est décrit dans la Politique de Confidentialité accessible depuis ce Site. Pour toute demande relative à vos données, utilisez le formulaire de contact.` },
       { title: 'Liens hypertextes', content: `Le Site peut contenir des liens vers des sites tiers. Nathan ne saurait être tenu responsable du contenu de ces sites externes et de l'usage qui pourrait être fait des informations qui y figurent.` },
-      { title: 'Contact', content: `Pour toute question relative au fonctionnement du Site ou à vos données personnelles, vous pouvez contacter Nathan via le formulaire de contact disponible sur le Site ou via le serveur Discord communautaire.` },
+      { title: 'Contact', content: `Pour toute question relative au fonctionnement du Site ou à vos données personnelles, vous pouvez contacter Nathan via le formulaire de contact du Site (par Discord ou email).` },
     ],
   },
 };
