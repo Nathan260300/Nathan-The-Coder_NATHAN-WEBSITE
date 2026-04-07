@@ -2530,7 +2530,7 @@ input, textarea, select {
   left: 0;
   right: 0;
   z-index: 200;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   gap: 12px;

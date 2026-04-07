@@ -291,7 +291,7 @@ navigate(getPage()).then(() => checkModalParams());
 
   const today = new Date();
   const start = new Date("2026-04-20");
-  const end = new Date("2026-05-02");
+  const end = new Date("2026-05-02T23:59:59");
 
   if (today >= start && today <= end) {
     banner.style.display = "flex";
@@ -301,8 +301,5 @@ navigate(getPage()).then(() => checkModalParams());
     document.documentElement.style.setProperty('--nav-offset', h + 'px');
     document.getElementById('nav').style.top = h + 'px';
     document.getElementById('app').style.paddingTop = `calc(var(--nav-h) + ${h}px)`;
-
-  } else {
-    banner.style.display = "none";
   }
 })();
