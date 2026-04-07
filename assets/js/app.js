@@ -288,7 +288,21 @@ navigate(getPage()).then(() => checkModalParams());
 // Bannière abs
 (function() {
   const banner = document.getElementById('absence-banner');
-  document.documentElement.style.setProperty('--nav-offset', banner.offsetHeight + 'px');
-  document.getElementById('nav').style.top = banner.offsetHeight + 'px';
-  document.getElementById('app').style.paddingTop = 'calc(var(--nav-h) + ' + banner.offsetHeight + 'px)';
+
+  const today = new Date();
+  const start = new Date("2026-04-20");
+  const end = new Date("2026-05-02");
+
+  if (today >= start && today <= end) {
+    banner.style.display = "flex";
+
+    const h = banner.offsetHeight;
+
+    document.documentElement.style.setProperty('--nav-offset', h + 'px');
+    document.getElementById('nav').style.top = h + 'px';
+    document.getElementById('app').style.paddingTop = `calc(var(--nav-h) + ${h}px)`;
+
+  } else {
+    banner.style.display = "none";
+  }
 })();
