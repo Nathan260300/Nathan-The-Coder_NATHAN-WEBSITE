@@ -284,3 +284,11 @@ initState();
 initModalListeners();
 initNavigation();
 navigate(getPage()).then(() => checkModalParams());
+
+// Bannière abs
+(function() {
+  const banner = document.getElementById('absence-banner');
+  document.documentElement.style.setProperty('--nav-offset', banner.offsetHeight + 'px');
+  document.getElementById('nav').style.top = banner.offsetHeight + 'px';
+  document.getElementById('app').style.paddingTop = 'calc(var(--nav-h) + ' + banner.offsetHeight + 'px)';
+})();

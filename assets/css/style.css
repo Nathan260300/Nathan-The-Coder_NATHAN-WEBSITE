@@ -2522,3 +2522,38 @@ input, textarea, select {
   font-size: 1rem;
   flex-shrink: 0;
 }
+
+/* Bannière abs */
+#absence-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.25);
+  backdrop-filter: blur(12px);
+  font-size: 0.85rem;
+  color: #fecaca;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#absence-banner i.fa-clock {
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+#absence-banner span {
+  text-align: center;
+  line-height: 1.5;
+}
+
+#absence-banner strong {
+  color: #ef4444;
+  font-weight: 700;
+}
