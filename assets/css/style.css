@@ -32,6 +32,7 @@
   --nav-h:        68px;
 }
 
+/* Skip link accessibilité */
 .skip-link {
   position: absolute;
   top: -100%;
@@ -50,6 +51,7 @@
   top: 8px;
 }
 
+/* Focus visible global */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;

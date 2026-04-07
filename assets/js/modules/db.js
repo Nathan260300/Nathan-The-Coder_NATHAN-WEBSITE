@@ -12,35 +12,20 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
-const _dbCache = new Map();
-function _cacheKey(table, opts) { return `${table}:${JSON.stringify(opts)}`; }
-
 async function fetchTable(table, opts = {}) {
-  const key = _cacheKey(table, opts);
-  const cached = _dbCache.get(key);
-  if (cached && Date.now() - cached.ts < 60_000) return cached.data;
-
   let query = db.from(table).select('*');
   if (opts.order) query = query.order(opts.order, { ascending: opts.asc ?? false });
   if (opts.limit) query = query.limit(opts.limit);
   if (opts.eq)    query = query.eq(opts.eq[0], opts.eq[1]);
   const { data, error } = await query;
   if (error) throw error;
-  const result = data || [];
-  _dbCache.set(key, { data: result, ts: Date.now() });
-  return result;
+  return data || [];
 }
 
 async function fetchPageContent(page) {
-  const key = `page_content:${page}`;
-  const cached = _dbCache.get(key);
-  if (cached && Date.now() - cached.ts < 60_000) return cached.data;
-
   try {
     const { data } = await db.from('page_content').select('*').eq('page', page).single();
-    const result = data || null;
-    _dbCache.set(key, { data: result, ts: Date.now() });
-    return result;
+    return data || null;
   } catch(_) { return null; }
 }
 

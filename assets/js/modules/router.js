@@ -15,9 +15,6 @@ const PAGE_TITLES = {
   cookies: 'Politique des cookies', 'mentions-legales': 'Mentions légales',
 };
 
-const PAGE_CACHE = new Map();
-const CACHEABLE_PAGES = new Set(['home', 'competences', 'ressources', 'changelog', 'moi', 'cgu', 'confidentialite', 'cookies', 'mentions-legales']);
-
 function getPage() {
   const p = (new URLSearchParams(window.location.search).get('p') || 'home').toLowerCase();
   return VALID_PAGES.includes(p) ? p : '404';
@@ -70,15 +67,8 @@ async function navigate(page) {
   wrapper.className = 'page';
 
   try {
-    let html;
-    if (CACHEABLE_PAGES.has(page) && PAGE_CACHE.has(page)) {
-      html = PAGE_CACHE.get(page);
-    } else {
-      const render = pages[page];
-      html = render ? await render() : pages['404']();
-      if (CACHEABLE_PAGES.has(page)) PAGE_CACHE.set(page, html);
-    }
-    wrapper.innerHTML = html;
+    const render = pages[page];
+    wrapper.innerHTML = render ? await render() : pages['404']();
   } catch(err) {
     console.error('Page render error:', err);
     wrapper.innerHTML = pages['error'](err.message);
