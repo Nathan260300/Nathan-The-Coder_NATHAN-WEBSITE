@@ -1,11 +1,14 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { AuthProvider }                from './hooks/useAuth';
 import { ModalProvider }               from './hooks/useModal';
-import { NavProgressProvider, useNavProgress } from './hooks/useNavProgress';
+import { NavProgressProvider }         from './hooks/useNavProgress';
+import { usePageTransition }           from './hooks/usePageTransition';
 import Navbar         from './components/layout/Navbar';
 import Footer         from './components/layout/Footer';
 import AbsenceBanner  from './components/layout/AbsenceBanner';
+import IntroLoader    from './components/layout/IntroLoader';
 import Home           from './pages/Home';
 import Projets        from './pages/Projets';
 import Blog           from './pages/Blog';
@@ -21,93 +24,116 @@ import NotFound       from './pages/NotFound';
 import AuthCallback   from './pages/AuthCallback';
 
 const PAGE_TITLES = {
-  '/':                 'Accueil',
-  '/projets':          'Projets',
-  '/collaborations':   'Collaborations',
-  '/blog':             'Blog',
-  '/tuto':             'Tutos',
-  '/competences':      'Compétences',
-  '/ressources':       'Ressources',
-  '/changelog':        'Changelog',
-  '/moi':              'À propos',
-  '/contact':          'Contact',
-  '/cgu':              'CGU',
-  '/confidentialite':  'Politique de confidentialité',
-  '/cookies':          'Politique des cookies',
-  '/mentions-legales': 'Mentions légales',
+  '/':                       'Accueil',
+  '/projets':                'Projets',
+  '/collaborations':         'Collaborations',
+  '/blog':                   'Blog',
+  '/tuto':                   'Tutos',
+  '/competences':            'Compétences',
+  '/ressources':             'Ressources',
+  '/changelog':              'Changelog',
+  '/moi':                    'À propos',
+  '/contact':                'Contact',
+  '/legal/cgu':              'CGU',
+  '/legal/confidentialite':  'Politique de confidentialité',
+  '/legal/cookies':          'Politique des cookies',
+  '/legal/mentions-legales': 'Mentions légales',
 };
 
+function getTitle(pathname) {
+  return PAGE_TITLES[pathname] || null;
+}
+
 function AnimatedRoutes() {
-  const location          = useLocation();
-  const { start, finish } = useNavProgress();
+  const location = useLocation();
   const [displayedLocation, setDisplayedLocation] = useState(location);
-  const divRef  = useRef(null);
-  const prevRef = useRef(location.pathname);
-  const t1Ref   = useRef(null);
-  const t2Ref   = useRef(null);
-  const rafRef  = useRef(null);
+  const wrapRef  = useRef(null);
+  const prevRef  = useRef(location.pathname);
+  const t1Ref    = useRef(null);
+
+  useEffect(() => {
+    document.title = `${getTitle(location.pathname) || 'Nathan The Coder'} — Nathan The Coder`;
+  }, []);
 
   useEffect(() => {
     if (location.pathname === prevRef.current) return;
     prevRef.current = location.pathname;
+    document.title = `${getTitle(location.pathname) || 'Nathan The Coder'} — Nathan The Coder`;
+
+    const el = wrapRef.current;
+    if (!el) return;
 
     clearTimeout(t1Ref.current);
-    clearTimeout(t2Ref.current);
-    cancelAnimationFrame(rafRef.current);
 
-    start();
+    el.dataset.leaving  = 'true';
+    delete el.dataset.entering;
 
-    const el = divRef.current;
-    if (el) el.classList.add('is-leaving');
+    const onEnd = () => {
+      el.removeEventListener('transitionend', onEnd);
+      clearTimeout(t1Ref.current);
 
-    t1Ref.current = setTimeout(() => {
-      if (el) el.classList.remove('is-leaving');
+      el.dataset.leaving = 'false';
 
-      setDisplayedLocation(location);
-      document.title = `${PAGE_TITLES[location.pathname] || '404'} — Nathan The Coder`;
+      flushSync(() => setDisplayedLocation(location));
       window.scrollTo({ top: 0, behavior: 'instant' });
 
-      rafRef.current = requestAnimationFrame(() => {
-        if (el) el.classList.add('is-entering');
-        t2Ref.current = setTimeout(() => {
-          if (el) el.classList.remove('is-entering');
-          finish();
-        }, 280);
+      el.style.opacity   = '0';
+      el.style.transform = 'translateY(10px)';
+      el.style.transition = 'none';
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.transition = 'opacity 260ms ease, transform 260ms ease';
+          el.style.opacity    = '1';
+          el.style.transform  = 'translateY(0)';
+          t1Ref.current = setTimeout(() => {
+            el.style.cssText = '';
+          }, 280);
+        });
       });
-    }, 190);
+    };
+
+    el.addEventListener('transitionend', onEnd, { once: true });
+
+    t1Ref.current = setTimeout(() => {
+      el.removeEventListener('transitionend', onEnd);
+      onEnd();
+    }, 140);
 
     return () => {
       clearTimeout(t1Ref.current);
-      clearTimeout(t2Ref.current);
-      cancelAnimationFrame(rafRef.current);
+      el.removeEventListener('transitionend', onEnd);
     };
   }, [location.pathname]);
 
   return (
-    <div className="page" ref={divRef}>
+    <div ref={wrapRef} className="page-wrap">
       <Routes location={displayedLocation}>
-        <Route path="/"                 element={<Home />} />
-        <Route path="/projets"          element={<Projets />} />
-        <Route path="/collaborations"   element={<Collaborations />} />
-        <Route path="/blog"             element={<Blog />} />
-        <Route path="/tuto"             element={<Tuto />} />
-        <Route path="/competences"      element={<Competences />} />
-        <Route path="/ressources"       element={<Ressources />} />
-        <Route path="/changelog"        element={<Changelog />} />
-        <Route path="/moi"              element={<Moi />} />
-        <Route path="/contact"          element={<Contact />} />
-        <Route path="/cgu"              element={<Legal />} />
-        <Route path="/confidentialite"  element={<Legal />} />
-        <Route path="/cookies"          element={<Legal />} />
-        <Route path="/mentions-legales" element={<Legal />} />
-        <Route path="/auth/callback"     element={<AuthCallback />} />
-        <Route path="*"                 element={<NotFound />} />
-      </Routes>
+          <Route path="/"                      element={<Home />} />
+          <Route path="/projets"               element={<Projets />} />
+          <Route path="/collaborations"        element={<Collaborations />} />
+          <Route path="/blog"                  element={<Blog />} />
+          <Route path="/tuto"                  element={<Tuto />} />
+          <Route path="/competences"           element={<Competences />} />
+          <Route path="/ressources"            element={<Ressources />} />
+          <Route path="/changelog"             element={<Changelog />} />
+          <Route path="/moi"                   element={<Moi />} />
+          <Route path="/contact"               element={<Contact />} />
+          <Route path="/legal/:slug"           element={<Legal />} />
+          <Route path="/cgu"                   element={<Navigate to="/legal/cgu" replace />} />
+          <Route path="/confidentialite"       element={<Navigate to="/legal/confidentialite" replace />} />
+          <Route path="/cookies"               element={<Navigate to="/legal/cookies" replace />} />
+          <Route path="/mentions-legales"      element={<Navigate to="/legal/mentions-legales" replace />} />
+          <Route path="/auth/callback"         element={<AuthCallback />} />
+          <Route path="*"                      element={<NotFound />} />
+        </Routes>
     </div>
   );
 }
 
 function Layout() {
+  usePageTransition();
+
   return (
     <>
       <a href="#app" className="skip-link">Aller au contenu principal</a>
@@ -126,12 +152,17 @@ function Layout() {
 }
 
 export default function App() {
+  const [loaded, setLoaded] = useState(false);
+
   return (
     <BrowserRouter>
       <AuthProvider>
         <NavProgressProvider>
           <ModalProvider>
-            <Layout />
+            {!loaded && <IntroLoader onDone={() => setLoaded(true)} />}
+            <div style={{ visibility: loaded ? 'visible' : 'hidden' }}>
+              <Layout />
+            </div>
           </ModalProvider>
         </NavProgressProvider>
       </AuthProvider>

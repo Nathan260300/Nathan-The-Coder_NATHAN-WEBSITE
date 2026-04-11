@@ -115,6 +115,8 @@ export default function Home() {
             ['fas fa-code', '#007acc', 'VS Code'],
             ['fab fa-apple', null, 'macOS'],
             ['fab fa-linux', null, 'Linux'],
+            ['fab fa-react', '#61dafb', 'React'],
+            ['fas fa-bolt', '#646cff', 'Vite']
           ].map(([icon, color, label]) => (
             <span key={label} className="badge">
               <i className={icon} style={color ? { color } : {}} /> {label}

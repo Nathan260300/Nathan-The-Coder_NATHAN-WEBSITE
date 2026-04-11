@@ -39,10 +39,10 @@ export default function Footer() {
           <span>© 2026 Nathan The Coder — GNU GPL v3</span>
           {lastUpdate && <span className="footer-update">{lastUpdate}</span>}
           <div className="footer-legal">
-            <Link to="/cgu">CGU</Link>
-            <Link to="/confidentialite">Confidentialité</Link>
-            <Link to="/cookies">Cookies</Link>
-            <Link to="/mentions-legales">Mentions légales</Link>
+            <Link to="/legal/cgu">CGU</Link>
+            <Link to="/legal/confidentialite">Confidentialité</Link>
+            <Link to="/legal/cookies">Cookies</Link>
+            <Link to="/legal/mentions-legales">Mentions légales</Link>
           </div>
         </div>
       </div>

@@ -48,9 +48,9 @@ const LEGAL_DATA = {
 };
 
 const LABELS = {
-  cgu:              'CGU',
-  confidentialite:  'Confidentialité',
-  cookies:          'Cookies',
+  cgu:                'CGU',
+  confidentialite:    'Confidentialité',
+  cookies:            'Cookies',
   'mentions-legales': 'Mentions légales',
 };
 
@@ -71,7 +71,7 @@ export default function Legal() {
         <p className="legal-updated">Dernière mise à jour : mars 2026</p>
         <div className="legal-sibling-nav">
           {siblings.map(([id]) => (
-            <Link key={id} to={`/${id}`} className="legal-sibling-link">{LABELS[id]}</Link>
+            <Link key={id} to={`/legal/${id}`} className="legal-sibling-link">{LABELS[id]}</Link>
           ))}
         </div>
       </div>
