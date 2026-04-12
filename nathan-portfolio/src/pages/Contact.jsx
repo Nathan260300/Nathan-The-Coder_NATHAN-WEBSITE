@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { fetchPageContent, db, loginWithDiscord } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { PageHero, Loader } from '../components/ui';
+import { useReadyAnimate } from '../hooks/useReadyAnimate';
+import { PageHero } from '../components/ui';
+import { fadeUp, staggerContainer, cardVariant } from '../lib/motion';
 
 function ContactForm() {
   const { user, loginProvider, setLoginProvider, getDiscordUser, doLogout } = useAuth();
@@ -26,15 +29,12 @@ function ContactForm() {
     const name      = viaEmail ? user.email : (discordUser?.username || 'Inconnu');
     const contactId = viaEmail ? user.email : user.id;
     try {
-      const { error } = await db.from('contact_messages').insert([{
-        name, discord_id: contactId, message: message.trim(), created_at: new Date().toISOString(),
-      }]);
+      const { error } = await db.from('contact_messages').insert([{ name, discord_id: contactId, message: message.trim(), created_at: new Date().toISOString() }]);
       if (error) throw error;
       setStatus({ type: 'success', text: `✅ Message envoyé ! Je te répondrai via ${viaEmail ? 'email' : 'Discord'} dès que possible.` });
       setMessage('');
-    } catch (e) {
-      setStatus({ type: 'error', text: `❌ Erreur : ${e.message}` });
-    } finally { setSending(false); }
+    } catch (e) { setStatus({ type: 'error', text: `❌ Erreur : ${e.message}` }); }
+    finally     { setSending(false); }
   };
 
   const handleSendOtp = async () => {
@@ -73,19 +73,16 @@ function ContactForm() {
         </div>
         <div className="form-group">
           <label className="form-label" htmlFor="c-message">Message *</label>
-          <textarea
-            className="form-textarea"
-            id="c-message"
-            placeholder="Bonjour Nathan ! Je voulais te dire..."
-            rows={5}
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-          />
+          <textarea className="form-textarea" id="c-message" placeholder="Bonjour Nathan ! Je voulais te dire..." rows={5} value={message} onChange={e => setMessage(e.target.value)} />
         </div>
         <button className="btn-submit" onClick={handleSend} disabled={sending}>
           {sending ? <i className="fas fa-spinner fa-spin" /> : <><i className="fas fa-paper-plane" /> Envoyer</>}
         </button>
-        {status.text && <div className={`form-status ${status.type}`}>{status.text}</div>}
+        {status.text && (
+          <motion.div className={`form-status ${status.type}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+            {status.text}
+          </motion.div>
+        )}
       </div>
     );
   }
@@ -93,7 +90,7 @@ function ContactForm() {
   return (
     <div className="contact-form-card">
       <h3>📬 Envoyer un message</h3>
-      <p className="contact-auth-intro">Identifie-toi pour m'envoyer un message. Je te répondrai via le moyen choisi.</p>
+      <p className="contact-auth-intro">Identifie-toi pour m&apos;envoyer un message. Je te répondrai via le moyen choisi.</p>
       <div className="contact-auth-choice">
         <button className="contact-auth-btn discord" onClick={loginWithDiscord}>
           <i className="fab fa-discord" />
@@ -104,14 +101,7 @@ function ContactForm() {
           {!otpStep ? (
             <div>
               <div className="contact-email-input-row">
-                <input
-                  className="form-input"
-                  type="email"
-                  placeholder="ton@email.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSendOtp()}
-                />
+                <input className="form-input" type="email" placeholder="ton@email.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSendOtp()} />
                 <button className="contact-auth-send-btn" onClick={handleSendOtp} disabled={sendingOtp}>
                   {sendingOtp ? <i className="fas fa-spinner fa-spin" /> : <><i className="fas fa-paper-plane" /> Envoyer le code</>}
                 </button>
@@ -122,24 +112,12 @@ function ContactForm() {
             <div>
               <p className="form-hint">Code envoyé à <strong>{email}</strong>. Vérifie ta boîte mail.</p>
               <div className="contact-email-input-row">
-                <input
-                  className="form-input contact-otp-input"
-                  type="text"
-                  placeholder="123456"
-                  maxLength={6}
-                  inputMode="numeric"
-                  value={otp}
-                  onChange={e => setOtp(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleVerifyOtp()}
-                  autoFocus
-                />
+                <input className="form-input contact-otp-input" type="text" placeholder="123456" maxLength={6} inputMode="numeric" value={otp} onChange={e => setOtp(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleVerifyOtp()} autoFocus />
                 <button className="contact-auth-send-btn" onClick={handleVerifyOtp} disabled={sendingOtp}>
                   {sendingOtp ? <i className="fas fa-spinner fa-spin" /> : <><i className="fas fa-check" /> Vérifier</>}
                 </button>
               </div>
-              <button className="contact-otp-resend" onClick={() => { setOtpStep(false); setOtp(''); setOtpErr(''); }}>
-                Renvoyer le code
-              </button>
+              <button className="contact-otp-resend" onClick={() => { setOtpStep(false); setOtp(''); setOtpErr(''); }}>Renvoyer le code</button>
               {otpErr && <div className="contact-auth-error">{otpErr}</div>}
             </div>
           )}
@@ -150,40 +128,41 @@ function ContactForm() {
 }
 
 export default function Contact() {
-  const [content, setContent] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const animate                   = useReadyAnimate();
+  const [content, setContent]     = useState(null);
+  const [loading, setLoading]     = useState(true);
 
   useEffect(() => {
     fetchPageContent('contact').then(d => { setContent(d); setLoading(false); });
   }, []);
 
-  if (loading) return <Loader />;
-
   return (
     <>
-      <PageHero content={content} label="Contact" title="Écris-moi" subtitle="Tu as une question, une idée de collab ou juste envie de discuter ? Je réponds vite." />
+      <motion.div variants={fadeUp} initial="hidden" animate={animate}>
+        <PageHero content={content} label="Contact" title="Écris-moi" subtitle="Tu as une question, une idée de collab ou juste envie de discuter ? Je réponds vite." />
+      </motion.div>
       <div className="page-content">
-        <div className="contact-layout">
-          <div id="contact-form-area">
-            <ContactForm />
-          </div>
-          <div className="contact-sidebar">
-            <div className="contact-info-card">
-              <h4>Retrouve-moi aussi ici</h4>
-              <a className="contact-link-item" href="https://github.com/nathan260300" target="_blank" rel="noopener"><i className="fab fa-github" /> GitHub — nathan260300</a>
-              <a className="contact-link-item" href="https://discord.gg/hvK9dhSKQF" target="_blank" rel="noopener"><i className="fab fa-discord" /> Serveur Discord</a>
-              <a className="contact-link-item" href="https://youtube.com/@nathan26060" target="_blank" rel="noopener"><i className="fab fa-youtube" /> YouTube — @nathan26060</a>
+        {!loading && (
+          <motion.div className="contact-layout" variants={staggerContainer(0.1, 0.1)} initial="hidden" animate={animate}>
+            <div id="contact-form-area">
+              <ContactForm />
             </div>
-            <div className="contact-info-card">
-              <h4>💡 Bon à savoir</h4>
-              <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
-                Ton message est sauvegardé dans ma base de données.
-                Je te contacte via Discord dès que possible.
-                Pas de spam, promis !
-              </p>
-            </div>
-          </div>
-        </div>
+            <motion.div className="contact-sidebar" variants={staggerContainer(0.1, 0.2)} initial="hidden" animate={animate}>
+              <motion.div className="contact-info-card" variants={cardVariant}>
+                <h4>Retrouve-moi aussi ici</h4>
+                <a className="contact-link-item" href="https://github.com/nathan260300" target="_blank" rel="noopener"><i className="fab fa-github" /> GitHub — nathan260300</a>
+                <a className="contact-link-item" href="https://discord.gg/hvK9dhSKQF" target="_blank" rel="noopener"><i className="fab fa-discord" /> Serveur Discord</a>
+                <a className="contact-link-item" href="https://youtube.com/@nathan26060" target="_blank" rel="noopener"><i className="fab fa-youtube" /> YouTube — @nathan26060</a>
+              </motion.div>
+              <motion.div className="contact-info-card" variants={cardVariant}>
+                <h4>💡 Bon à savoir</h4>
+                <p style={{ fontSize: '.85rem', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+                  Ton message est sauvegardé dans ma base de données. Je te contacte via Discord dès que possible. Pas de spam, promis !
+                </p>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
       </div>
     </>
   );

@@ -1,5 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import NotFound from './NotFound';
+import { staggerContainer, fadeUp, cardVariant } from '../lib/motion';
 
 const LEGAL_DATA = {
   cgu: {
@@ -63,8 +65,13 @@ export default function Legal() {
   const siblings = Object.entries(LEGAL_DATA).filter(([id]) => id !== slug);
 
   return (
-    <div className="legal-page">
-      <div className="legal-hero">
+    <motion.div
+      className="legal-page"
+      variants={staggerContainer(0.07, 0)}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div className="legal-hero" variants={fadeUp}>
         <Link to="/" className="legal-back-btn"><i className="fas fa-arrow-left" /> Retour</Link>
         <div className="legal-hero-tag">{data.icon} Légal</div>
         <h1 className="legal-title">{data.title}</h1>
@@ -74,15 +81,22 @@ export default function Legal() {
             <Link key={id} to={`/legal/${id}`} className="legal-sibling-link">{LABELS[id]}</Link>
           ))}
         </div>
-      </div>
-      <div className="legal-body">
+      </motion.div>
+
+      <motion.div
+        className="legal-body"
+        variants={staggerContainer(0.06, 0.15)}
+      >
         {data.sections.map((s, i) => (
-          <div key={i} className="legal-block">
+          <motion.div key={i} className="legal-block" variants={cardVariant}>
             <div className="legal-block-num">{String(i + 1).padStart(2, '0')}</div>
-            <div className="legal-block-content"><h3>{s.title}</h3><p>{s.content}</p></div>
-          </div>
+            <div className="legal-block-content">
+              <h3>{s.title}</h3>
+              <p>{s.content}</p>
+            </div>
+          </motion.div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

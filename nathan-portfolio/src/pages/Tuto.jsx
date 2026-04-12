@@ -1,29 +1,17 @@
-import { useEffect, useState } from 'react';
-import { fetchTable, fetchPageContent } from '../lib/supabase';
-import { Card, PageHero, EmptyState, ErrorState, Loader } from '../components/ui';
+import { motion } from 'framer-motion';
 import { useModal } from '../hooks/useModal';
+import { usePageData } from '../hooks/usePageData';
+import { useReadyAnimate } from '../hooks/useReadyAnimate';
+import { Card, PageHero, EmptyState, ErrorState } from '../components/ui';
 import { BlogModal } from '../components/ui/Modals';
 import { useDeepLink } from '../hooks/useDeepLink.jsx';
+import { staggerContainer, cardVariant, fadeUp } from '../lib/motion';
 
 export default function Tuto() {
-  const { openModal } = useModal();
+  const animate                                    = useReadyAnimate();
+  const { openModal }                              = useModal();
   useDeepLink();
-  const [tutos,   setTutos]   = useState([]);
-  const [content, setContent] = useState(null);
-  const [error,   setError]   = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    Promise.allSettled([
-      fetchPageContent('tuto'),
-      fetchTable('tutos', { order: 'created_at' }),
-    ]).then(([pc, result]) => {
-      if (pc.status === 'fulfilled') setContent(pc.value);
-      if (result.status === 'fulfilled') setTutos(result.value);
-      else setError(result.reason?.message);
-      setLoading(false);
-    });
-  }, []);
+  const { items: tutos, content, error, loading }  = usePageData('tutos', 'tuto', { order: 'created_at' });
 
   const openTuto = (id) => {
     const params = new URLSearchParams(window.location.search);
@@ -32,20 +20,25 @@ export default function Tuto() {
     openModal(<BlogModal id={id} table="tutos" />);
   };
 
-  if (loading) return <Loader />;
-
   return (
     <>
-      <PageHero content={content} label="Tutoriels" title="Apprends avec moi" subtitle="Des tutoriels complets avec extraits de code et conseils pratiques." />
+      <motion.div variants={fadeUp} initial="hidden" animate={animate}>
+        <PageHero content={content} label="Tutoriels" title="Apprends avec moi" subtitle="Des tutoriels complets avec extraits de code et conseils pratiques." />
+      </motion.div>
       <div className="page-content">
-        <div className="cards-grid">
-          {error
-            ? <ErrorState message={error} />
-            : tutos.length
-              ? tutos.map(t => <Card key={t.id} item={t} tag="🎓 Tuto" onClick={() => openTuto(t.id)} />)
+        {!error && !loading && (
+          <motion.div className="cards-grid" variants={staggerContainer(0.07, 0.1)} initial="hidden" animate={animate}>
+            {tutos.length
+              ? tutos.map(t => (
+                  <motion.div key={t.id} variants={cardVariant}>
+                    <Card item={t} tag="🎓 Tuto" onClick={() => openTuto(t.id)} />
+                  </motion.div>
+                ))
               : <EmptyState message="Aucun tutoriel pour le moment." />
-          }
-        </div>
+            }
+          </motion.div>
+        )}
+        {error && <div className="cards-grid"><ErrorState message={error} /></div>}
       </div>
     </>
   );

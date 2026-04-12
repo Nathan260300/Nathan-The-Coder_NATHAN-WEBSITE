@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, createContext, useContext } from 'react';
 import { flushSync } from 'react-dom';
 import { AuthProvider }                from './hooks/useAuth';
 import { ModalProvider }               from './hooks/useModal';
@@ -22,6 +22,9 @@ import Contact        from './pages/Contact';
 import Legal          from './pages/Legal';
 import NotFound       from './pages/NotFound';
 import AuthCallback   from './pages/AuthCallback';
+
+export const AppReadyContext = createContext(false);
+export const useAppReady = () => useContext(AppReadyContext);
 
 const PAGE_TITLES = {
   '/':                       'Accueil',
@@ -64,37 +67,29 @@ function AnimatedRoutes() {
     if (!el) return;
 
     clearTimeout(t1Ref.current);
-
     el.dataset.leaving  = 'true';
     delete el.dataset.entering;
 
     const onEnd = () => {
       el.removeEventListener('transitionend', onEnd);
       clearTimeout(t1Ref.current);
-
       el.dataset.leaving = 'false';
-
       flushSync(() => setDisplayedLocation(location));
       window.scrollTo({ top: 0, behavior: 'instant' });
-
-      el.style.opacity   = '0';
-      el.style.transform = 'translateY(10px)';
+      el.style.opacity    = '0';
+      el.style.transform  = 'translateY(10px)';
       el.style.transition = 'none';
-
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           el.style.transition = 'opacity 260ms ease, transform 260ms ease';
           el.style.opacity    = '1';
           el.style.transform  = 'translateY(0)';
-          t1Ref.current = setTimeout(() => {
-            el.style.cssText = '';
-          }, 280);
+          t1Ref.current = setTimeout(() => { el.style.cssText = ''; }, 280);
         });
       });
     };
 
     el.addEventListener('transitionend', onEnd, { once: true });
-
     t1Ref.current = setTimeout(() => {
       el.removeEventListener('transitionend', onEnd);
       onEnd();
@@ -109,24 +104,24 @@ function AnimatedRoutes() {
   return (
     <div ref={wrapRef} className="page-wrap">
       <Routes location={displayedLocation}>
-          <Route path="/"                      element={<Home />} />
-          <Route path="/projets"               element={<Projets />} />
-          <Route path="/collaborations"        element={<Collaborations />} />
-          <Route path="/blog"                  element={<Blog />} />
-          <Route path="/tuto"                  element={<Tuto />} />
-          <Route path="/competences"           element={<Competences />} />
-          <Route path="/ressources"            element={<Ressources />} />
-          <Route path="/changelog"             element={<Changelog />} />
-          <Route path="/moi"                   element={<Moi />} />
-          <Route path="/contact"               element={<Contact />} />
-          <Route path="/legal/:slug"           element={<Legal />} />
-          <Route path="/cgu"                   element={<Navigate to="/legal/cgu" replace />} />
-          <Route path="/confidentialite"       element={<Navigate to="/legal/confidentialite" replace />} />
-          <Route path="/cookies"               element={<Navigate to="/legal/cookies" replace />} />
-          <Route path="/mentions-legales"      element={<Navigate to="/legal/mentions-legales" replace />} />
-          <Route path="/auth/callback"         element={<AuthCallback />} />
-          <Route path="*"                      element={<NotFound />} />
-        </Routes>
+        <Route path="/"                      element={<Home />} />
+        <Route path="/projets"               element={<Projets />} />
+        <Route path="/collaborations"        element={<Collaborations />} />
+        <Route path="/blog"                  element={<Blog />} />
+        <Route path="/tuto"                  element={<Tuto />} />
+        <Route path="/competences"           element={<Competences />} />
+        <Route path="/ressources"            element={<Ressources />} />
+        <Route path="/changelog"             element={<Changelog />} />
+        <Route path="/moi"                   element={<Moi />} />
+        <Route path="/contact"               element={<Contact />} />
+        <Route path="/legal/:slug"           element={<Legal />} />
+        <Route path="/cgu"                   element={<Navigate to="/legal/cgu" replace />} />
+        <Route path="/confidentialite"       element={<Navigate to="/legal/confidentialite" replace />} />
+        <Route path="/cookies"               element={<Navigate to="/legal/cookies" replace />} />
+        <Route path="/mentions-legales"      element={<Navigate to="/legal/mentions-legales" replace />} />
+        <Route path="/auth/callback"         element={<AuthCallback />} />
+        <Route path="*"                      element={<NotFound />} />
+      </Routes>
     </div>
   );
 }
@@ -159,10 +154,12 @@ export default function App() {
       <AuthProvider>
         <NavProgressProvider>
           <ModalProvider>
-            {!loaded && <IntroLoader onDone={() => setLoaded(true)} />}
-            <div style={{ visibility: loaded ? 'visible' : 'hidden' }}>
-              <Layout />
-            </div>
+            <AppReadyContext.Provider value={loaded}>
+              {!loaded && <IntroLoader onDone={() => setLoaded(true)} />}
+              <div style={{ visibility: loaded ? 'visible' : 'hidden' }}>
+                <Layout />
+              </div>
+            </AppReadyContext.Provider>
           </ModalProvider>
         </NavProgressProvider>
       </AuthProvider>

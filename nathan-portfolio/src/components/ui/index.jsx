@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { formatDate } from '../../lib/utils';
 
 export function Card({ item, tag, onClick }) {
@@ -39,10 +40,15 @@ export function PageHero({ content, label, title, subtitle }) {
 
 export function EmptyState({ message = 'Aucun contenu pour le moment.' }) {
   return (
-    <div className="empty-state">
+    <motion.div
+      className="empty-state"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+    >
       <div className="empty-state-icon">📭</div>
       <p>{message}</p>
-    </div>
+    </motion.div>
   );
 }
 

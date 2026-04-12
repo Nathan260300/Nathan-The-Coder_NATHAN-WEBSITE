@@ -44,3 +44,16 @@ export async function loginWithDiscord() {
 export async function logout() {
   await db.auth.signOut();
 }
+
+export async function fetchStats() {
+  const [p, b, t] = await Promise.allSettled([
+    db.from('projects').select('id', { count: 'exact', head: true }),
+    db.from('blog').select('id',     { count: 'exact', head: true }),
+    db.from('tutos').select('id',    { count: 'exact', head: true }),
+  ]);
+  return {
+    projects: p.status === 'fulfilled' ? p.value.count : '?',
+    blog:     b.status === 'fulfilled' ? b.value.count : '?',
+    tutos:    t.status === 'fulfilled' ? t.value.count : '?',
+  };
+}

@@ -1,22 +1,46 @@
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AbsenceBanner() {
-  const [visible, setVisible] = useState(false);
+  const [visible,    setVisible]    = useState(false);
+  const [dismissed,  setDismissed]  = useState(false);
 
   useEffect(() => {
+    if (sessionStorage.getItem('banner-dismissed')) return;
     const today = new Date();
     const start = new Date('2026-04-20');
     const end   = new Date('2026-05-02T23:59:59');
     if (today >= start && today <= end) setVisible(true);
   }, []);
 
-  if (!visible) return null;
+  const dismiss = () => {
+    setDismissed(true);
+    sessionStorage.setItem('banner-dismissed', '1');
+  };
 
   return (
-    <div id="absence-banner">
-      <span>
-        <i className="fas fa-clock" /> Je serai absent du <strong>24 avril</strong> au <strong>2 mai</strong> — les réponses seront retardées.
-      </span>
-    </div>
+    <AnimatePresence>
+      {visible && !dismissed && (
+        <motion.div
+          id="absence-banner"
+          style={{ display: 'flex' }}
+          initial={{ y: -48, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -48, opacity: 0 }}
+          transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+        >
+          <span>
+            <i className="fas fa-clock" /> Je serai absent du <strong>24 avril</strong> au <strong>2 mai</strong> — les réponses seront retardées.
+          </span>
+          <button
+            onClick={dismiss}
+            aria-label="Fermer"
+            style={{ marginLeft: '12px', background: 'none', border: 'none', color: '#fca5a5', cursor: 'pointer', fontSize: '1rem', lineHeight: 1, flexShrink: 0 }}
+          >
+            ×
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

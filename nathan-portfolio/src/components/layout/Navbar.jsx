@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavProgress } from '../../hooks/useNavProgress';
 
 const NAV_LINKS = [
@@ -19,20 +20,21 @@ export default function Navbar() {
   const location   = useLocation();
   const { barRef } = useNavProgress();
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
+  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
   useEffect(() => {
-    const handler = (e) => {
-      if (e.key === 'Escape') setMenuOpen(false);
-    };
+    const handler = (e) => { if (e.key === 'Escape') setMenuOpen(false); };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
   return (
-    <nav id="nav">
+    <motion.nav
+      id="nav"
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+    >
       <Link to="/" className="nav-brand" aria-label="Nathan The Coder — Accueil">
         <img src="/nathan.jpg" alt="" width="36" height="36" className="nav-logo-img" aria-hidden="true" fetchPriority="high" />
         <span>Nathan<span className="accent">.</span></span>
@@ -68,6 +70,6 @@ export default function Navbar() {
       </div>
 
       <div id="nav-progress" ref={barRef} />
-    </nav>
+    </motion.nav>
   );
 }

@@ -1,0 +1,14 @@
+@import './base/variables.css';
+@import './base/reset.css';
+@import './layout/atmosphere.css';
+@import './layout/navbar.css';
+@import './layout/footer.css';
+@import './layout/page.css';
+@import './components/buttons.css';
+@import './components/cards.css';
+@import './components/forms.css';
+@import './components/modal.css';
+@import './components/comments.css';
+@import './components/loader.css';
+@import './pages/home.css';
+@import './pages/pages.css';

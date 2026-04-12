@@ -1,49 +1,34 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { db } from '../../lib/supabase';
-import { formatDate } from '../../lib/utils';
 
 export default function Footer() {
-  const [lastUpdate, setLastUpdate] = useState('');
-
-  useEffect(() => {
-    db.from('changelog')
-      .select('created_at')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-      .then(({ data }) => {
-        if (data?.created_at) setLastUpdate(`Dernière MAJ : ${formatDate(data.created_at)}`);
-      })
-      .catch(() => {});
-  }, []);
+  const year = new Date().getFullYear();
 
   return (
     <footer id="footer">
       <div className="footer-inner">
         <div className="footer-brand">
           <div className="footer-brand-top">
-            <img src="/nathan.jpg" alt="" width="36" height="36" className="footer-logo-img" aria-hidden="true" loading="lazy" />
+            <img src="/nathan.jpg" alt="" width="32" height="32" className="footer-logo-img" aria-hidden="true" />
             <span className="footer-name">Nathan<span className="accent">.</span></span>
           </div>
-          <p>Développeur web & bot Discord</p>
-        </div>
-
-        <div className="footer-links">
-          <a href="https://github.com/nathan260300" target="_blank" rel="noopener" aria-label="GitHub de Nathan"><i className="fab fa-github" aria-hidden="true" /></a>
-          <a href="https://discord.gg/hvK9dhSKQF" target="_blank" rel="noopener" aria-label="Serveur Discord de Nathan"><i className="fab fa-discord" aria-hidden="true" /></a>
-          <a href="https://youtube.com/@nathan26060" target="_blank" rel="noopener" aria-label="Chaîne YouTube de Nathan"><i className="fab fa-youtube" aria-hidden="true" /></a>
-        </div>
-
-        <div className="footer-copy">
-          <span>© 2026 Nathan The Coder — GNU GPL v3</span>
-          {lastUpdate && <span className="footer-update">{lastUpdate}</span>}
+          <p>Développeur Web &amp; Discord</p>
           <div className="footer-legal">
             <Link to="/legal/cgu">CGU</Link>
             <Link to="/legal/confidentialite">Confidentialité</Link>
             <Link to="/legal/cookies">Cookies</Link>
             <Link to="/legal/mentions-legales">Mentions légales</Link>
           </div>
+        </div>
+
+        <div className="footer-links">
+          <a href="https://github.com/nathan260300" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i className="fab fa-github" /></a>
+          <a href="https://discord.gg/hvK9dhSKQF"  target="_blank" rel="noopener noreferrer" aria-label="Discord"><i className="fab fa-discord" /></a>
+          <a href="https://youtube.com/@nathan26060" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i className="fab fa-youtube" /></a>
+        </div>
+
+        <div className="footer-copy">
+          <span>© {year} Nathan The Coder</span>
+          <span className="footer-update">GNU GPL v3</span>
         </div>
       </div>
     </footer>
