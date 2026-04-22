@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nathan-the-coder.netlify.app/sitemap.xml
