@@ -21,12 +21,15 @@ export default defineConfig({
     cssCodeSplit:      true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react:         ['react', 'react-dom'],
-          router:        ['react-router-dom'],
-          motion:        ['framer-motion'],
-          supabase:      ['@supabase/supabase-js'],
-        },
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) return 'react';
+            if (id.includes('react-router-dom')) return 'router';
+            if (id.includes('framer-motion')) return 'motion';
+            if (id.includes('@supabase/supabase-js')) return 'supabase';
+            return 'vendor';
+          }
+        }
       },
     },
   },
