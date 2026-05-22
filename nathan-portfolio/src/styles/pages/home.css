@@ -20,7 +20,7 @@
   font-size: 0.8rem;
   color: var(--text-muted);
   letter-spacing: 0.08em;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   padding: 6px 14px;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -40,26 +40,72 @@
   50%       { box-shadow: 0 0 14px #22c55e, 0 0 24px rgba(34,197,94,0.3); }
 }
 
+.home-eyebrow {
+  font-family: var(--font-code);
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+
 .home-title {
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+  font-size: clamp(2.2rem, 4.2vw, 3.5rem);
   font-weight: 800;
   letter-spacing: -0.04em;
-  line-height: 1.05;
+  line-height: 1.1;
   margin-bottom: 24px;
   color: var(--text);
+  min-height: 1.2em;
 }
-.home-title .line-accent {
+
+.home-title-typewriter {
+  display: inline;
+  font-family: var(--font-display);
   color: transparent;
   -webkit-text-stroke: 1.5px var(--accent);
 }
 
+.home-cursor {
+  display: inline-block;
+  color: var(--accent);
+  -webkit-text-stroke: 0;
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+  font-weight: 300;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
 .home-desc {
-  font-size: clamp(1rem, 2vw, 1.15rem);
+  font-size: clamp(1rem, 2vw, 1.1rem);
   color: var(--text-muted);
   line-height: 1.75;
-  margin-bottom: 36px;
+  margin-bottom: 22px;
   max-width: 480px;
+}
+
+.home-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-bottom: 32px;
+}
+
+.home-proof-item {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-proof-item i {
+  color: #22c55e;
+  font-size: 0.75rem;
 }
 
 .home-cta {
@@ -193,11 +239,11 @@
 .stack-badges { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .home-recent {
-  margin-top: clamp(60px, 8vw, 90px);
+  margin-top: clamp(32px, 4vw, 48px);
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
-  padding: 0 clamp(20px, 6vw, 80px) clamp(60px, 8vw, 100px);
+  padding: 0 clamp(20px, 6vw, 80px) clamp(32px, 4vw, 48px);
   content-visibility: auto;
   contain-intrinsic-size: 0 500px;
 }
@@ -216,8 +262,10 @@
 @media (max-width: 768px) {
   .home-hero { padding: 32px 16px 28px; gap: 28px; }
   .home-greeting { font-size: 0.72rem; padding: 5px 10px; }
+  .home-eyebrow { font-size: 0.8rem; }
   .home-title { font-size: clamp(1.9rem, 7.5vw, 2.6rem); }
-  .home-desc { font-size: 0.95rem; margin-bottom: 24px; }
+  .home-desc { font-size: 0.95rem; margin-bottom: 18px; }
+  .home-proof { gap: 8px 16px; margin-bottom: 24px; }
   .home-cta { flex-direction: column; gap: 10px; width: 100%; }
   .terminal-body { font-size: 0.72rem; padding: 12px; min-height: 180px; overflow-x: hidden; white-space: pre-wrap; word-break: break-all; }
   .terminal-title { font-size: 0.68rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
@@ -232,6 +280,7 @@
   .home-title { font-size: clamp(1.7rem, 8vw, 2.2rem); }
   .stats-row { grid-template-columns: repeat(2, 1fr); padding: 0 14px; gap: 8px; }
   .stat-value { font-size: 1.5rem; }
+  .home-proof { flex-direction: column; gap: 6px; }
 }
 
 @media (max-width: 360px) {
