@@ -198,7 +198,7 @@ export default function Home() {
           { value: stats.projects, label: 'Projets' },
           { value: stats.blog,     label: 'Articles de blog' },
           { value: stats.tutos,    label: 'Tutoriels' },
-          { value: '1+',           label: "Années d'XP" },
+          { value: '2+',           label: "Années d'XP" },
         ].map(s => (
           <motion.div key={s.label} className="stat-card" variants={cardVariant}>
             <div className="stat-value">{s.value}</div>
