@@ -353,7 +353,7 @@ export default function Home() {
       >
         <div className="section-header">
           <h2 className="section-title">Derniers tutoriels</h2>
-          <Link to="/tutos" className="section-link">Tous les tutos →</Link>
+          <Link to="/tuto" className="section-link">Tous les tutos →</Link>
         </div>
         {!tl && (
           <motion.div className="cards-grid" variants={staggerContainer(0.07)} initial="hidden" animate="visible">
