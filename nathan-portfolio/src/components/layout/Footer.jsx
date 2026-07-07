@@ -28,7 +28,6 @@ export default function Footer() {
 
         <div className="footer-copy">
           <span>© {year} Nathan The Coder</span>
-          <span className="footer-update">GNU GPL v3</span>
         </div>
       </div>
     </footer>
