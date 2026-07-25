@@ -8,8 +8,8 @@ export default function AbsenceBanner() {
   useEffect(() => {
     if (sessionStorage.getItem('banner-dismissed')) return;
     const today = new Date();
-    const start = new Date('2026-05-22');
-    const end   = new Date('2026-05-29');
+    const start = new Date('2026-07-25');
+    const end   = new Date('2026-08-26');
     if (today >= start && today <= end) setVisible(true);
   }, []);
 
@@ -30,7 +30,7 @@ export default function AbsenceBanner() {
           transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
         >
           <span>
-            <i className="fas fa-clock" /> Je serai absent du <strong>25</strong> au <strong>29 mai</strong> — les réponses seront retardées.
+            <i className="fas fa-clock" /> Je serai absent du <strong>26 Juillet</strong> au <strong>26 août</strong> — les réponses seront retardées.
           </span>
           <button
             onClick={dismiss}
